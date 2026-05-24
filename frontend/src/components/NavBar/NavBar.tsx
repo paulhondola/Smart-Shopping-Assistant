@@ -1,38 +1,53 @@
-import { AppBar, Toolbar, Button, Box } from "@mui/material";
-import { NavLink, useNavigate, Link } from "react-router-dom";
-import logo from "../../assets/logo.png";
+import { NavLink, Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import logo from '../../assets/logo.svg'
+
+const navLinks = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/products', label: 'Products' },
+  { to: '/categories', label: 'Categories' },
+  { to: '/promotions', label: 'Promotions' },
+]
 
 function NavBar() {
-  const navigate = useNavigate();
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Link to="/">
-          <Box
-            component="img"
-            src={logo}
-            alt="Smart Shopping Assistant Logo"
-            sx={{ width: 52, height: 2 }}
-          />
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4 sm:px-6 lg:px-8">
+        <Link to="/" className="mr-4 flex shrink-0 items-center">
+          <img src={logo} alt="Smart Shopping Assistant Logo" className="h-8 w-auto" />
         </Link>
-        <Button component={NavLink} to="/" variant="contained">
-          Home
-        </Button>
-        <Button component={NavLink} to="/products" variant="contained">
-          Products
-        </Button>
-        <Button component={NavLink} to="/categories" variant="contained">
-          Categories
-        </Button>
-        <Button component={NavLink} to="/promotions" variant="contained">
-          Promotions
-        </Button>
-        <Button component={NavLink} to="/cart" variant="contained">
+
+        <nav className="flex flex-1 items-center gap-0.5" aria-label="Main navigation">
+          {navLinks.map(({ to, label, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                cn(
+                  'rounded-md px-3 py-1.5 text-[1.0625rem] transition-colors',
+                  isActive
+                    ? 'text-foreground font-medium'
+                    : 'text-muted-foreground font-normal hover:text-foreground',
+                )
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <Button
+          className="ml-auto shrink-0"
+          nativeButton={false}
+          render={<NavLink to="/cart" />}
+        >
           Cart
         </Button>
-      </Toolbar>
-    </AppBar>
-  );
+      </div>
+    </header>
+  )
 }
 
-export default NavBar;
+export default NavBar
