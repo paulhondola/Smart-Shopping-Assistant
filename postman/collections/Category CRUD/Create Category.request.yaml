@@ -1,5 +1,6 @@
 $kind: http-request
-url: "{{baseUrl}}/api/category"
+name: Create Category
+url: "{{baseUrl}}/api/categor"
 method: POST
 headers:
   Content-Type: application/json

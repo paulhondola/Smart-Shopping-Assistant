@@ -1,5 +1,6 @@
 $kind: http-request
-url: "{{baseUrl}}/api/category/999999"
+name: Delete Non-existent Category (404)
+url: "{{baseUrl}}/api/categories/999999"
 method: DELETE
 headers:
   Accept: application/json

@@ -1,5 +1,6 @@
 $kind: http-request
-url: "{{baseUrl}}/api/category"
+name: Get All Categories
+url: "{{baseUrl}}/api/categories"
 method: GET
 headers:
   Accept: application/json

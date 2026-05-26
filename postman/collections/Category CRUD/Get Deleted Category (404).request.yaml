@@ -1,5 +1,6 @@
 $kind: http-request
-url: "{{baseUrl}}/api/category/{{categoryId}}"
+name: Get Deleted Category (404)
+url: "{{baseUrl}}/api/categories/{{categoryId}}"
 method: GET
 headers:
   Accept: application/json

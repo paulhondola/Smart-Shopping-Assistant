@@ -1,5 +1,6 @@
 $kind: http-request
-url: "{{baseUrl}}/api/category/{{categoryId}}"
+name: Update Category
+url: "{{baseUrl}}/api/categories/{{categoryId}}"
 method: PUT
 headers:
   Content-Type: application/json

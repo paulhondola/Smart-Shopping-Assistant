@@ -1,0 +1,21 @@
+@reference "../../index.css";
+
+.not-found-container {
+  @apply flex flex-1 flex-col items-center justify-center gap-4 py-24 text-center;
+}
+
+.not-found-code {
+  @apply text-7xl font-bold text-muted-foreground/30;
+}
+
+.not-found-title {
+  @apply text-2xl font-semibold text-foreground;
+}
+
+.not-found-description {
+  @apply max-w-xs text-sm text-muted-foreground;
+}
+
+.not-found-path {
+  @apply font-mono text-foreground/70;
+}

@@ -1,5 +1,6 @@
 $kind: http-request
-url: "{{baseUrl}}/api/category/{{deleteCategoryId}}"
+name: Delete Category
+url: "{{baseUrl}}/api/categories/{{deleteCategoryId}}"
 method: DELETE
 headers:
   Accept: application/json

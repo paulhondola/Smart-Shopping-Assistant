@@ -1,11 +1,12 @@
-import './App.css'
-import NavBar from './components/NavBar/NavBar'
-import Home from './components/Home/Home'
-import Products from './components/Products/Products'
-import Categories from './components/Categories/Categories'
-import Promotions from './components/Promotions/Promotions'
-import Cart from './components/Cart/Cart'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import "./App.css";
+import NavBar from "./components/NavBar";
+import Home from "./components/Home";
+import Products from "./components/Products";
+import Categories from "./components/Categories";
+import Promotions from "./components/Promotions";
+import Cart from "./components/Cart";
+import { Routes, Route } from "react-router-dom";
+import NotFound from "./components/NotFound";
 
 function App() {
   return (
@@ -18,11 +19,11 @@ function App() {
           <Route path="/categories" element={<Categories />} />
           <Route path="/promotions" element={<Promotions />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
