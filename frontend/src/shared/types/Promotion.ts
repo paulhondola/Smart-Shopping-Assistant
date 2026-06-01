@@ -27,3 +27,14 @@ export const promotionRewardLabel: Record<PromotionReward, string> = {
 };
 
 export const toPromotion = (dto: PromotionGetDto): Promotion => ({ ...dto });
+
+export function formatPromotionReward(p: Promotion): string {
+  if (p.reward === 0) {
+    return `Buy ${p.threshold}, Get ${p.rewardValue} Free`;
+  }
+  const scope =
+    p.type === 0
+      ? `on ${p.threshold}+ items`
+      : `on orders over ${p.threshold} RON`;
+  return `${p.rewardValue}% off ${scope}`;
+}
