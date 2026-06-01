@@ -1,4 +1,4 @@
-import "./App.css";
+import { Box } from "@mui/material";
 import NavBar from "./components/NavBar";
 import Home from "./components/Home";
 import Products from "./components/Products";
@@ -10,9 +10,9 @@ import NotFound from "./components/NotFound";
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <NavBar />
-      <main className="flex-1">
+      <Box component="main" sx={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -21,8 +21,8 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </main>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

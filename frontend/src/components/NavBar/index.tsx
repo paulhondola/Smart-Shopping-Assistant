@@ -1,53 +1,103 @@
-import { NavLink, Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import logo from '../../assets/logo.png'
+import type { ComponentType } from "react";
+import { AppBar, Box, Button, Toolbar } from "@mui/material";
+import type { ButtonProps, SxProps, Theme } from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Link, NavLink } from "react-router-dom";
+import type { NavLinkProps } from "react-router-dom";
+import logo from "../../assets/logo.png";
 
 const navLinks = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/products', label: 'Products' },
-  { to: '/categories', label: 'Categories' },
-  { to: '/promotions', label: 'Promotions' },
-]
+  { to: "/", label: "Home", end: true },
+  { to: "/products", label: "Products" },
+  { to: "/categories", label: "Categories" },
+  { to: "/promotions", label: "Promotions" },
+];
+
+type RouterButtonProps = ButtonProps & Pick<NavLinkProps, "to" | "end">;
+const RouterButton = Button as ComponentType<RouterButtonProps>;
+
+const navLinkSx: SxProps<Theme> = {
+  fontSize: "1.0625rem",
+  color: "text.secondary",
+  fontWeight: 400,
+  textTransform: "none",
+  "&.active": {
+    color: "text.primary",
+    fontWeight: 500,
+  },
+  "&:hover": {
+    backgroundColor: "transparent",
+    color: "text.primary",
+  },
+};
 
 function NavBar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="mr-4 flex shrink-0 items-center">
-          <img src={logo} alt="Smart Shopping Assistant Logo" className="h-8 w-auto" />
-        </Link>
+    <AppBar
+      position="sticky"
+      color="inherit"
+      elevation={0}
+      sx={{ borderBottom: 1, borderColor: "divider" }}
+    >
+      <Toolbar
+        sx={{
+          maxWidth: "1280px",
+          width: "100%",
+          mx: "auto",
+          px: { xs: 2, sm: 3, lg: 4 },
+          minHeight: { xs: 56 },
+          gap: 0.5,
+        }}
+      >
+        <Box
+          component={Link}
+          to="/"
+          sx={{
+            mr: 3,
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+            flexShrink: 0,
+          }}
+        >
+          <Box
+            component="img"
+            src={logo}
+            alt="Smart Shopping Assistant Logo"
+            sx={{ height: 32, width: "auto" }}
+          />
+        </Box>
 
-        <nav className="flex flex-1 items-center gap-0.5" aria-label="Main navigation">
+        <Box
+          component="nav"
+          aria-label="Main navigation"
+          sx={{ display: "flex", flex: 1, gap: 0.5 }}
+        >
           {navLinks.map(({ to, label, end }) => (
-            <NavLink
+            <RouterButton
               key={to}
+              component={NavLink}
               to={to}
               end={end}
-              className={({ isActive }) =>
-                cn(
-                  'rounded-md px-3 py-1.5 text-[1.0625rem] transition-colors',
-                  isActive
-                    ? 'text-foreground font-medium'
-                    : 'text-muted-foreground font-normal hover:text-foreground',
-                )
-              }
+              variant="text"
+              sx={navLinkSx}
             >
               {label}
-            </NavLink>
+            </RouterButton>
           ))}
-        </nav>
+        </Box>
 
-        <Button
-          className="ml-auto shrink-0"
-          nativeButton={false}
-          render={<NavLink to="/cart" />}
+        <RouterButton
+          component={NavLink}
+          to="/cart"
+          variant="contained"
+          startIcon={<ShoppingCartIcon />}
         >
           Cart
-        </Button>
-      </div>
-    </header>
-  )
+        </RouterButton>
+      </Toolbar>
+    </AppBar>
+  );
 }
 
-export default NavBar
+export default NavBar;

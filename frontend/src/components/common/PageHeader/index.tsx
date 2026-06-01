@@ -1,4 +1,5 @@
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 interface PageHeaderProps {
   title: string;
@@ -8,9 +9,20 @@ interface PageHeaderProps {
 
 function PageHeader({ title, actionLabel, onAction }: PageHeaderProps) {
   return (
-    <Box>
-      <Typography>{title}</Typography>
-      <Button onClick={onAction}>{actionLabel}</Button>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        mb: 3,
+      }}
+    >
+      <Typography variant="h5" fontWeight={600}>
+        {title}
+      </Typography>
+      <Button variant="contained" startIcon={<AddIcon />} onClick={onAction}>
+        {actionLabel}
+      </Button>
     </Box>
   );
 }

@@ -1,9 +1,3 @@
-// Categories
-// |-- Page Header (titlu + buton "Add category")
-// |-- Table
-// |-- CategoryFormDialog
-// |-- ConfirmDialog
-
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { categoriesApi } from "@/api/client/CategoryApiClient";
@@ -31,7 +25,7 @@ import ConfirmDialog from "../common/ConfirmDialog";
 function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(" ");
+  const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState<Category | null>(null);
@@ -44,7 +38,7 @@ function Categories() {
         setCategories(data);
         setError("");
       })
-      .catch((err) => setError(err.message))
+      .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }
 
@@ -52,17 +46,18 @@ function Categories() {
     setEditing(null);
     setFormOpen(true);
   }
+
   function handleEdit(category: Category) {
     setEditing(category);
     setFormOpen(true);
   }
 
-  function handleDelete(category: Category) {
+  function handleDeleteClick(category: Category) {
     setDeleting(category);
     setConfirmOpen(true);
   }
 
-  async function handleDelete() {
+  async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
     try {
@@ -72,14 +67,6 @@ function Categories() {
       setError((err as Error).message);
     }
   }
-  <ConfirmDialog
-    open={confirmOpen}
-    title="Delete category"
-    description={`Are you sure you want to delete ${deleting?.name}?`}
-    confirmLabel="Delete"
-    onConfirm={handleDelete}
-    onCancel={() => setConfirmOpen(false)}
-  />;
 
   useEffect(() => {
     loadCategories();
@@ -88,8 +75,8 @@ function Categories() {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
-        title={"Categories"}
-        actionLabel={"Add Category"}
+        title="Categories"
+        actionLabel="Add Category"
         onAction={handleAdd}
       />
 
@@ -98,6 +85,7 @@ function Categories() {
           {error}
         </Alert>
       )}
+
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
@@ -129,7 +117,7 @@ function Categories() {
                     <Tooltip title="Delete">
                       <IconButton
                         color="error"
-                        onClick={() => handleDelete(category)}
+                        onClick={() => handleDeleteClick(category)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -159,6 +147,15 @@ function Categories() {
           }}
         />
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete category"
+        description={`Are you sure you want to delete "${deleting?.name}"?`}
+        confirmLabel="Delete"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </Container>
   );
 }
