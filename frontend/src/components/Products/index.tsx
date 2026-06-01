@@ -1,6 +1,8 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { productsApi } from "@/api/client/ProductApiClient";
+import ProductFilterBar from "./ProductFilterBar";
+import { useProductFilters } from "./hooks/useProductFilters";
 import {
   Alert,
   Box,
@@ -24,6 +26,8 @@ import ConfirmDialog from "../common/ConfirmDialog";
 
 function Products() {
   const [products, setProducts] = useState<Product[]>([]);
+  const { filters, filteredProducts, activeFilterCount, updateFilter, clearFilters } =
+    useProductFilters(products);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -87,6 +91,16 @@ function Products() {
         </Alert>
       )}
 
+      {!loading && (
+        <ProductFilterBar
+          products={products}
+          filters={filters}
+          activeFilterCount={activeFilterCount}
+          onFilterChange={updateFilter}
+          onClearFilters={clearFilters}
+        />
+      )}
+
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
@@ -104,7 +118,7 @@ function Products() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <TableRow key={product.id} hover>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.description}</TableCell>
@@ -137,10 +151,12 @@ function Products() {
                   </TableCell>
                 </TableRow>
               ))}
-              {products.length === 0 && (
+              {filteredProducts.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} align="center">
-                    No products yet.
+                    {products.length === 0
+                      ? "No products yet."
+                      : "No products match the current filters."}
                   </TableCell>
                 </TableRow>
               )}
