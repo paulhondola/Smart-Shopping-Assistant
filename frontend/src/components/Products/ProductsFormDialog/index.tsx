@@ -3,8 +3,11 @@ import { productsApi } from "@/api/client/ProductApiClient";
 import type { ProductCreateDto, ProductUpdateDto } from "@/api/models/ProductModel";
 import type { Category } from "@/shared/types/Category";
 import type { Product } from "@/shared/types/Product";
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import {
   Alert,
+  Avatar,
+  Box,
   Button,
   Checkbox,
   Dialog,
@@ -124,6 +127,18 @@ function ProductFormDialog({ product, onClose, onSaved }: ProductFormDialogProps
             onChange={(e) => setImageUrl(e.target.value)}
             fullWidth
           />
+          {imageUrl.trim() !== "" && (
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Avatar
+                variant="square"
+                src={imageUrl}
+                alt="Preview"
+                sx={{ width: 120, height: 120 }}
+              >
+                <BrokenImageIcon />
+              </Avatar>
+            </Box>
+          )}
           <TextField
             label="Price"
             value={price}

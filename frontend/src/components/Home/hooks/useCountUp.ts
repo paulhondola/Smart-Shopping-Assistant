@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-export function useCountUp(target: number, active: boolean, duration = 1200): number {
+export function useCountUp(
+  target: number,
+  active: boolean,
+  duration = 1200,
+): number {
   const [value, setValue] = useState(0);
   const prefersReduced =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     if (!active) return;

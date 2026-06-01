@@ -1,10 +1,12 @@
-import EditIcon from "@mui/icons-material/Edit";
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { productsApi } from "@/api/client/ProductApiClient";
 import ProductFilterBar from "./ProductFilterBar";
 import { useProductFilters } from "./hooks/useProductFilters";
 import {
   Alert,
+  Avatar,
   Box,
   CircularProgress,
   Container,
@@ -110,6 +112,7 @@ function Products() {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell sx={{ width: 64 }}>Image</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell>Price</TableCell>
@@ -120,6 +123,16 @@ function Products() {
             <TableBody>
               {filteredProducts.map((product) => (
                 <TableRow key={product.id} hover>
+                  <TableCell>
+                    <Avatar
+                      variant="square"
+                      src={product.imageUrl}
+                      alt={product.name}
+                      sx={{ width: 48, height: 48 }}
+                    >
+                      <BrokenImageIcon fontSize="small" />
+                    </Avatar>
+                  </TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell>

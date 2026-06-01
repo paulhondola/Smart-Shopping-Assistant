@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { productsApi } from '@/api/client/ProductApiClient';
-import { categoriesApi } from '@/api/client/CategoryApiClient';
-import { promotionsApi } from '@/api/client/PromotionsApiClient';
-import type { Product } from '@/shared/types/Product';
-import type { Category } from '@/shared/types/Category';
-import type { Promotion } from '@/shared/types/Promotion';
+import { useState, useEffect } from "react";
+import { productsApi } from "@/api/client/ProductApiClient";
+import { categoriesApi } from "@/api/client/CategoryApiClient";
+import { promotionsApi } from "@/api/client/PromotionsApiClient";
+import type { Product } from "@/shared/types/Product";
+import type { Category } from "@/shared/types/Category";
+import type { Promotion } from "@/shared/types/Promotion";
 
 interface LandingCounts {
   products: number;
@@ -25,7 +25,7 @@ interface LandingDataState {
   error: string | null;
 }
 
-export function useLandingData(): LandingDataState {
+export const useLandingData = (): LandingDataState => {
   const [state, setState] = useState<LandingDataState>({
     data: null,
     loading: true,
@@ -61,7 +61,8 @@ export function useLandingData(): LandingDataState {
         }
       } catch (err) {
         if (!cancelled) {
-          const message = err instanceof Error ? err.message : 'Failed to load page data';
+          const message =
+            err instanceof Error ? err.message : "Failed to load page data";
           setState({ data: null, loading: false, error: message });
         }
       }
@@ -74,4 +75,4 @@ export function useLandingData(): LandingDataState {
   }, []);
 
   return state;
-}
+};
