@@ -17,7 +17,7 @@ function PageHeader({ title, actionLabel, onAction }: PageHeaderProps) {
         mb: 3,
       }}
     >
-      <Typography variant="h5" fontWeight={600}>
+      <Typography variant="h5" sx={{ fontWeight: 600 }}>
         {title}
       </Typography>
       <Button variant="contained" startIcon={<AddIcon />} onClick={onAction}>

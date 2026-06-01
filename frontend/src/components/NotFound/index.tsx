@@ -23,7 +23,7 @@ function NotFound() {
       >
         404
       </Typography>
-      <Typography variant="h5" fontWeight={600}>
+      <Typography variant="h5" sx={{ fontWeight: 600 }}>
         Page not found
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300 }}>
