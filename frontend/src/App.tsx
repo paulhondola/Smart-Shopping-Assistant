@@ -17,13 +17,13 @@ function App() {
         sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         <NavBar />
+        <Cart />
         <Box component="main" sx={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/promotions" element={<Promotions />} />
-            <Route path="/cart" element={<Cart />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

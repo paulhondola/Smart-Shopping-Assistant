@@ -10,6 +10,7 @@ import { useCart } from "@/context/CardContext/cart-context";
 function NavBar() {
   const [mode, setMode] = useState<"user" | "admin">("user");
   const navigate = useNavigate();
+  const { cart, openCart } = useCart();
   const handleModeChange = (
     _event: React.MouseEvent<HTMLElement>,
     value: "user" | "admin",
