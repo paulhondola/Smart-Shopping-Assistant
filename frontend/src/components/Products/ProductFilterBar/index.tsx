@@ -17,7 +17,7 @@ interface ProductFilterBarProps {
   activeFilterCount: number;
   onFilterChange: <K extends keyof ProductFilters>(
     key: K,
-    value: ProductFilters[K]
+    value: ProductFilters[K],
   ) => void;
   onClearFilters: () => void;
 }
@@ -30,7 +30,7 @@ export default function ProductFilterBar({
   onClearFilters,
 }: ProductFilterBarProps) {
   const allCategories = Array.from(
-    new Set(products.flatMap((p) => p.categories))
+    new Set(products.flatMap((p) => p.categories)),
   ).sort();
 
   return (

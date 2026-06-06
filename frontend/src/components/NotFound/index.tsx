@@ -19,7 +19,12 @@ function NotFound() {
     >
       <Typography
         variant="h1"
-        sx={{ fontSize: "6rem", fontWeight: 700, color: "text.secondary", opacity: 0.3 }}
+        sx={{
+          fontSize: "6rem",
+          fontWeight: 700,
+          color: "text.secondary",
+          opacity: 0.3,
+        }}
       >
         404
       </Typography>
@@ -27,7 +32,10 @@ function NotFound() {
         Page not found
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300 }}>
-        <Box component="span" sx={{ fontFamily: "monospace", color: "text.primary", opacity: 0.7 }}>
+        <Box
+          component="span"
+          sx={{ fontFamily: "monospace", color: "text.primary", opacity: 0.7 }}
+        >
           {pathname}
         </Box>{" "}
         doesn&apos;t exist.

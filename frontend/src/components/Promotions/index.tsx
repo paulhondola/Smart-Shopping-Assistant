@@ -23,9 +23,13 @@ import { promotionTypeLabel, promotionRewardLabel } from "../../shared/types/Pro
 import PageHeader from "../common/PageHeader";
 import PromotionFormDialog from "./PromotionFormDialog";
 import ConfirmDialog from "../common/ConfirmDialog";
+import PromotionFilterBar from "./PromotionFilterBar";
+import { usePromotionFilters } from "./hooks/usePromotionFilters";
 
 function Promotions() {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const { filters, filteredPromotions, activeFilterCount, updateFilter, clearFilters } =
+    usePromotionFilters(promotions);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -89,6 +93,15 @@ function Promotions() {
         </Alert>
       )}
 
+      {!loading && (
+        <PromotionFilterBar
+          filters={filters}
+          activeFilterCount={activeFilterCount}
+          onFilterChange={updateFilter}
+          onClearFilters={clearFilters}
+        />
+      )}
+
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
@@ -108,7 +121,7 @@ function Promotions() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {promotions.map((promotion) => (
+              {filteredPromotions.map((promotion) => (
                 <TableRow key={promotion.id} hover>
                   <TableCell>{promotion.name}</TableCell>
                   <TableCell>{promotionTypeLabel[promotion.type]}</TableCell>
@@ -142,10 +155,12 @@ function Promotions() {
                   </TableCell>
                 </TableRow>
               ))}
-              {promotions.length === 0 && (
+              {filteredPromotions.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    No promotions yet.
+                    {promotions.length === 0
+                      ? "No promotions yet."
+                      : "No promotions match the current filters."}
                   </TableCell>
                 </TableRow>
               )}

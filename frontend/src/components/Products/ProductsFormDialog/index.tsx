@@ -1,6 +1,9 @@
 import { categoriesApi } from "@/api/client/CategoryApiClient";
 import { productsApi } from "@/api/client/ProductApiClient";
-import type { ProductCreateDto, ProductUpdateDto } from "@/api/models/ProductModel";
+import type {
+  ProductCreateDto,
+  ProductUpdateDto,
+} from "@/api/models/ProductModel";
 import type { Category } from "@/shared/types/Category";
 import type { Product } from "@/shared/types/Product";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
@@ -31,7 +34,11 @@ interface ProductFormDialogProps {
   onSaved: () => void;
 }
 
-function ProductFormDialog({ product, onClose, onSaved }: ProductFormDialogProps) {
+function ProductFormDialog({
+  product,
+  onClose,
+  onSaved,
+}: ProductFormDialogProps) {
   const isEditing = product !== null;
 
   const [name, setName] = useState(product?.name ?? "");

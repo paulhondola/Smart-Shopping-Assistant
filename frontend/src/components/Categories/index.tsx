@@ -21,9 +21,13 @@ import type { Category } from "../../shared/types/Category";
 import PageHeader from "../common/PageHeader";
 import CategoryFormDialog from "./CategoryFormDialog";
 import ConfirmDialog from "../common/ConfirmDialog";
+import CategoryFilterBar from "./CategoryFilterBar";
+import { useCategoryFilters } from "./hooks/useCategoryFilters";
 
 function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const { filters, filteredCategories, activeFilterCount, updateFilter, clearFilters } =
+    useCategoryFilters(categories);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -86,6 +90,15 @@ function Categories() {
         </Alert>
       )}
 
+      {!loading && (
+        <CategoryFilterBar
+          filters={filters}
+          activeFilterCount={activeFilterCount}
+          onFilterChange={updateFilter}
+          onClearFilters={clearFilters}
+        />
+      )}
+
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
@@ -101,7 +114,7 @@ function Categories() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {categories.map((category) => (
+              {filteredCategories.map((category) => (
                 <TableRow key={category.id} hover>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>{category.description}</TableCell>
@@ -125,10 +138,12 @@ function Categories() {
                   </TableCell>
                 </TableRow>
               ))}
-              {categories.length === 0 && (
+              {filteredCategories.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={3} align="center">
-                    No categories yet.
+                    {categories.length === 0
+                      ? "No categories yet."
+                      : "No categories match the current filters."}
                   </TableCell>
                 </TableRow>
               )}

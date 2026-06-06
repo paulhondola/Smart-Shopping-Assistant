@@ -1,37 +1,23 @@
-import type { ComponentType } from "react";
 import { AppBar, Box, Button, Toolbar } from "@mui/material";
-import type { ButtonProps, SxProps, Theme } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { Link, NavLink } from "react-router-dom";
-import type { NavLinkProps } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
-
-const navLinks = [
-  { to: "/", label: "Home", end: true },
-  { to: "/products", label: "Products" },
-  { to: "/categories", label: "Categories" },
-  { to: "/promotions", label: "Promotions" },
-];
-
-type RouterButtonProps = ButtonProps & Pick<NavLinkProps, "to" | "end">;
-const RouterButton = Button as ComponentType<RouterButtonProps>;
-
-const navLinkSx: SxProps<Theme> = {
-  fontSize: "1.0625rem",
-  color: "text.secondary",
-  fontWeight: 400,
-  textTransform: "none",
-  "&.active": {
-    color: "text.primary",
-    fontWeight: 500,
-  },
-  "&:hover": {
-    backgroundColor: "transparent",
-    color: "text.primary",
-  },
-};
+import { useState } from "react";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { IconButton, Badge } from "@mui/material";
+import { useCart } from "@/context/CardContext/cart-context";
 
 function NavBar() {
+  const [mode, setMode] = useState<"user" | "admin">("user");
+  const navigate = useNavigate();
+  const handleModeChange = (
+    _event: React.MouseEvent<HTMLElement>,
+    value: "user" | "admin",
+  ) => {
+    setMode(value);
+    navigate("/");
+  };
+
   return (
     <AppBar
       position="sticky"
@@ -68,33 +54,47 @@ function NavBar() {
           />
         </Box>
 
-        <Box
-          component="nav"
-          aria-label="Main navigation"
-          sx={{ display: "flex", flex: 1, gap: 0.5 }}
-        >
-          {navLinks.map(({ to, label, end }) => (
-            <RouterButton
-              key={to}
-              component={NavLink}
-              to={to}
-              end={end}
-              variant="text"
-              sx={navLinkSx}
-            >
-              {label}
-            </RouterButton>
-          ))}
+        <Box sx={{ display: "flex", flexGrow: 1 }}>
+          <Button component={NavLink} to="/" end color="inherit">
+            Home
+          </Button>
+          {mode === "admin" ? (
+            <>
+              <Button component={NavLink} to="/categories" end color="inherit">
+                Categories
+              </Button>
+              <Button component={NavLink} to="/products" end color="inherit">
+                Products
+              </Button>
+              <Button component={NavLink} to="/promotions" color="inherit">
+                Promotions
+              </Button>
+            </>
+          ) : (
+            <Button component={NavLink} to="/shop" color="inherit">
+              Shop
+            </Button>
+          )}
         </Box>
 
-        <RouterButton
-          component={NavLink}
-          to="/cart"
-          variant="contained"
-          startIcon={<ShoppingCartIcon />}
+        <ToggleButtonGroup
+          value={mode}
+          exclusive
+          size="small"
+          sx={{ mr: 2 }}
+          onChange={handleModeChange}
         >
-          Cart
-        </RouterButton>
+          <ToggleButton value="user">User</ToggleButton>
+          <ToggleButton value="admin">Admin</ToggleButton>
+        </ToggleButtonGroup>
+
+        {mode === "user" && (
+          <IconButton color="inherit" onClick={openCart}>
+            <Badge badgeContent={cart?.itemCount ?? 0} color="primary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   );

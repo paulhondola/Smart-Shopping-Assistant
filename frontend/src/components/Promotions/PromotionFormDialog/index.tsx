@@ -1,7 +1,10 @@
 import { categoriesApi } from "@/api/client/CategoryApiClient";
 import { productsApi } from "@/api/client/ProductApiClient";
 import { promotionsApi } from "@/api/client/PromotionsApiClient";
-import type { PromotionCreateDto, PromotionUpdateDto } from "@/api/models/PromotionsModel";
+import type {
+  PromotionCreateDto,
+  PromotionUpdateDto,
+} from "@/api/models/PromotionsModel";
 import { PromotionReward, PromotionType } from "@/api/models/PromotionsModel";
 import type { Category } from "@/shared/types/Category";
 import type { Product } from "@/shared/types/Product";
@@ -27,14 +30,26 @@ interface PromotionFormDialogProps {
   onSaved: () => void;
 }
 
-function PromotionFormDialog({ promotion, onClose, onSaved }: PromotionFormDialogProps) {
+function PromotionFormDialog({
+  promotion,
+  onClose,
+  onSaved,
+}: PromotionFormDialogProps) {
   const isEditing = promotion !== null;
 
   const [name, setName] = useState(promotion?.name ?? "");
-  const [type, setType] = useState<number>(promotion?.type ?? PromotionType.Quantity);
-  const [threshold, setThreshold] = useState(promotion?.threshold.toString() ?? "0");
-  const [reward, setReward] = useState<number>(promotion?.reward ?? PromotionReward.FreeItems);
-  const [rewardValue, setRewardValue] = useState(promotion?.rewardValue.toString() ?? "0");
+  const [type, setType] = useState<number>(
+    promotion?.type ?? PromotionType.Quantity,
+  );
+  const [threshold, setThreshold] = useState(
+    promotion?.threshold.toString() ?? "0",
+  );
+  const [reward, setReward] = useState<number>(
+    promotion?.reward ?? PromotionReward.FreeItems,
+  );
+  const [rewardValue, setRewardValue] = useState(
+    promotion?.rewardValue.toString() ?? "0",
+  );
   const [categoryId, setCategoryId] = useState<string>(
     promotion?.categoryId?.toString() ?? "",
   );
@@ -150,7 +165,9 @@ function PromotionFormDialog({ promotion, onClose, onSaved }: PromotionFormDialo
             fullWidth
           >
             <MenuItem value={PromotionReward.FreeItems}>Free Items</MenuItem>
-            <MenuItem value={PromotionReward.PercentDiscount}>% Discount</MenuItem>
+            <MenuItem value={PromotionReward.PercentDiscount}>
+              % Discount
+            </MenuItem>
           </TextField>
 
           <TextField

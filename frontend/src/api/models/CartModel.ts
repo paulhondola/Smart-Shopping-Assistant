@@ -1,9 +1,4 @@
-export interface AppliedPromotionDto {
-  promotionName: string;
-  discount: number;
-}
-
-export interface CartItemGetDto {
+export interface CartItem {
   id: number;
   productId: number;
   productName: string;
@@ -12,19 +7,25 @@ export interface CartItemGetDto {
   subtotal: number;
 }
 
-export interface CartGetDto {
-  items: CartItemGetDto[];
+export interface AppliedPromotion {
+  promotionId: number;
+  promotionName: string;
+  discount: number;
+}
+
+export interface CartModel {
+  items: CartItem[];
   subtotal: number;
-  appliedPromotions: AppliedPromotionDto[];
+  appliedPromotions: AppliedPromotion[];
   totalDiscount: number;
   total: number;
 }
 
-export interface AddCartItemDto {
+export interface AddCartItemInput {
   productId: number;
   quantity: number;
 }
 
-export interface UpdateCartItemDto {
+export interface UpdateCartItemInput {
   quantity: number;
 }
