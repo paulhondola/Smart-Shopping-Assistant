@@ -1,27 +1,23 @@
 import { http } from "../base/http";
 import type { Promotion } from "../../shared/types/Promotion";
 import { toPromotion } from "../../shared/types/Promotion";
-import type {
-  PromotionGetDto,
-  PromotionCreateDto,
-  PromotionUpdateDto,
-} from "../models/PromotionsModel";
+import type { PromotionInput, PromotionOutput } from "../models/PromotionsModel";
 
 export const promotionsApi = {
   getAll: async (): Promise<Promotion[]> => {
-    const data = await http.get<PromotionGetDto[]>("/promotions");
+    const data = await http.get<PromotionOutput[]>("/promotions");
     return data.map(toPromotion);
   },
 
-  create: async (data: PromotionCreateDto): Promise<Promotion> => {
+  create: async (data: PromotionInput): Promise<Promotion> => {
     return toPromotion(
-      await http.post<PromotionGetDto, PromotionCreateDto>("/promotions", data),
+      await http.post<PromotionOutput, PromotionInput>("/promotions", data),
     );
   },
 
-  update: async (id: number, data: PromotionUpdateDto): Promise<Promotion> => {
+  update: async (id: number, data: PromotionInput): Promise<Promotion> => {
     return toPromotion(
-      await http.put<PromotionGetDto, PromotionUpdateDto>(
+      await http.put<PromotionOutput, PromotionInput>(
         `/promotions/${id}`,
         data,
       ),

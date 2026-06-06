@@ -1,27 +1,23 @@
 import { http } from "../base/http";
 import type { Category } from "../../shared/types/Category";
 import { toCategory } from "../../shared/types/Category";
-import type {
-  CategoryGetDto,
-  CategoryCreateDto,
-  CategoryUpdateDto,
-} from "../models/CategoryModel";
+import type { CategoryInput, CategoryOutput } from "../models/CategoryModel";
 
 export const categoriesApi = {
   getAll: async (): Promise<Category[]> => {
-    const data = await http.get<CategoryGetDto[]>("/categories");
+    const data = await http.get<CategoryOutput[]>("/categories");
     return data.map(toCategory);
   },
 
-  create: async (data: CategoryCreateDto): Promise<Category> => {
+  create: async (data: CategoryInput): Promise<Category> => {
     return toCategory(
-      await http.post<CategoryGetDto, CategoryCreateDto>("/categories", data),
+      await http.post<CategoryOutput, CategoryInput>("/categories", data),
     );
   },
 
-  update: async (id: number, data: CategoryUpdateDto): Promise<Category> => {
+  update: async (id: number, data: CategoryInput): Promise<Category> => {
     return toCategory(
-      await http.put<CategoryGetDto, CategoryUpdateDto>(
+      await http.put<CategoryOutput, CategoryInput>(
         `/categories/${id}`,
         data,
       ),

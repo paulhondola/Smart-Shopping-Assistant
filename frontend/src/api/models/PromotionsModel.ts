@@ -10,7 +10,7 @@ export const PromotionReward = {
 } as const;
 export type PromotionReward = (typeof PromotionReward)[keyof typeof PromotionReward];
 
-export interface PromotionGetDto {
+export interface PromotionOutput {
   id: number;
   name: string;
   type: PromotionType;
@@ -22,18 +22,7 @@ export interface PromotionGetDto {
   isActive: boolean;
 }
 
-export interface PromotionCreateDto {
-  name: string;
-  type: PromotionType;
-  threshold: number;
-  reward: PromotionReward;
-  rewardValue: number;
-  productId?: number;
-  categoryId?: number;
-  isActive: boolean;
-}
-
-export interface PromotionUpdateDto {
+export interface PromotionInput {
   name: string;
   type: PromotionType;
   threshold: number;

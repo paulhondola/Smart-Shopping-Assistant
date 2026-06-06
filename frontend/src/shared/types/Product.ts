@@ -1,4 +1,4 @@
-import type { ProductGetDto } from "../../api/models/ProductModel";
+import type { ProductOutput } from "../../api/models/ProductModel";
 
 export interface Product {
   id: number;
@@ -9,4 +9,4 @@ export interface Product {
   categories: string[];
 }
 
-export const toProduct = (dto: ProductGetDto): Product => ({ ...dto });
+export const toProduct = (dto: ProductOutput): Product => ({ ...dto });

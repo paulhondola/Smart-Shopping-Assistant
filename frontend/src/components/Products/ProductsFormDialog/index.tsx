@@ -1,9 +1,6 @@
 import { categoriesApi } from "@/api/client/CategoryApiClient";
 import { productsApi } from "@/api/client/ProductApiClient";
-import type {
-  ProductCreateDto,
-  ProductUpdateDto,
-} from "@/api/models/ProductModel";
+import type { ProductInput } from "@/api/models/ProductModel";
 import type { Category } from "@/shared/types/Category";
 import type { Product } from "@/shared/types/Product";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
@@ -82,23 +79,16 @@ function ProductFormDialog({
     setSaving(true);
     setError("");
     try {
+      const data: ProductInput = {
+        name,
+        description,
+        imageUrl,
+        price: parsedPrice,
+        categoryIds: selectedCategoryIds,
+      };
       if (isEditing) {
-        const data: ProductUpdateDto = {
-          name,
-          description,
-          imageUrl,
-          price: parsedPrice,
-          categoryIds: selectedCategoryIds,
-        };
         await productsApi.update(product.id, data);
       } else {
-        const data: ProductCreateDto = {
-          name,
-          description,
-          imageUrl,
-          price: parsedPrice,
-          categoryIds: selectedCategoryIds,
-        };
         await productsApi.create(data);
       }
       onSaved();

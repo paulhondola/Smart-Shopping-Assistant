@@ -1,4 +1,4 @@
-import type { CategoryGetDto } from "../../api/models/CategoryModel";
+import type { CategoryOutput } from "../../api/models/CategoryModel";
 
 export interface Category {
   id: number;
@@ -6,7 +6,7 @@ export interface Category {
   description: string;
 }
 
-export const toCategory = (dto: CategoryGetDto): Category => ({
+export const toCategory = (dto: CategoryOutput): Category => ({
   id: dto.id,
   name: dto.name,
   description: dto.description ?? "",

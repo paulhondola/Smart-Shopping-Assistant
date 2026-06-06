@@ -1,15 +1,10 @@
-export interface CategoryGetDto {
+export interface CategoryOutput {
   id: number;
   name: string;
   description?: string;
 }
 
-export interface CategoryCreateDto {
-  name: string;
-  description?: string;
-}
-
-export interface CategoryUpdateDto {
+export interface CategoryInput {
   name: string;
   description?: string;
 }

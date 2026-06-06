@@ -1,4 +1,4 @@
-export interface ProductGetDto {
+export interface ProductOutput {
   id: number;
   name: string;
   description: string;
@@ -7,15 +7,7 @@ export interface ProductGetDto {
   categories: string[];
 }
 
-export interface ProductCreateDto {
-  name: string;
-  description: string;
-  imageUrl: string;
-  price: number;
-  categoryIds: number[];
-}
-
-export interface ProductUpdateDto {
+export interface ProductInput {
   name: string;
   description: string;
   imageUrl: string;

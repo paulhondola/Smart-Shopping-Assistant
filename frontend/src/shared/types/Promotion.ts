@@ -1,5 +1,5 @@
 import type {
-  PromotionGetDto,
+  PromotionOutput,
   PromotionType,
   PromotionReward,
 } from "../../api/models/PromotionsModel";
@@ -26,7 +26,7 @@ export const promotionRewardLabel: Record<PromotionReward, string> = {
   1: "% Discount",
 };
 
-export const toPromotion = (dto: PromotionGetDto): Promotion => ({ ...dto });
+export const toPromotion = (dto: PromotionOutput): Promotion => ({ ...dto });
 
 export function formatPromotionReward(p: Promotion): string {
   if (p.reward === 0) {

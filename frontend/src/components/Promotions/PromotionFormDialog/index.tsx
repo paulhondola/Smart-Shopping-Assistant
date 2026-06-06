@@ -1,10 +1,7 @@
 import { categoriesApi } from "@/api/client/CategoryApiClient";
 import { productsApi } from "@/api/client/ProductApiClient";
 import { promotionsApi } from "@/api/client/PromotionsApiClient";
-import type {
-  PromotionCreateDto,
-  PromotionUpdateDto,
-} from "@/api/models/PromotionsModel";
+import type { PromotionInput } from "@/api/models/PromotionsModel";
 import { PromotionReward, PromotionType } from "@/api/models/PromotionsModel";
 import type { Category } from "@/shared/types/Category";
 import type { Product } from "@/shared/types/Product";
@@ -97,7 +94,7 @@ function PromotionFormDialog({
     setSaving(true);
     setError("");
 
-    const payload: PromotionCreateDto | PromotionUpdateDto = {
+    const payload: PromotionInput = {
       name,
       type: type as PromotionType,
       threshold: parsedThreshold,

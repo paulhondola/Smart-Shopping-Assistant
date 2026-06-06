@@ -1,27 +1,23 @@
 import { http } from "../base/http";
 import type { Product } from "../../shared/types/Product";
 import { toProduct } from "../../shared/types/Product";
-import type {
-  ProductGetDto,
-  ProductCreateDto,
-  ProductUpdateDto,
-} from "../models/ProductModel";
+import type { ProductInput, ProductOutput } from "../models/ProductModel";
 
 export const productsApi = {
   getAll: async (): Promise<Product[]> => {
-    const data = await http.get<ProductGetDto[]>("/products");
+    const data = await http.get<ProductOutput[]>("/products");
     return data.map(toProduct);
   },
 
-  create: async (data: ProductCreateDto): Promise<Product> => {
+  create: async (data: ProductInput): Promise<Product> => {
     return toProduct(
-      await http.post<ProductGetDto, ProductCreateDto>("/products", data),
+      await http.post<ProductOutput, ProductInput>("/products", data),
     );
   },
 
-  update: async (id: number, data: ProductUpdateDto): Promise<Product> => {
+  update: async (id: number, data: ProductInput): Promise<Product> => {
     return toProduct(
-      await http.put<ProductGetDto, ProductUpdateDto>(`/products/${id}`, data),
+      await http.put<ProductOutput, ProductInput>(`/products/${id}`, data),
     );
   },
 
