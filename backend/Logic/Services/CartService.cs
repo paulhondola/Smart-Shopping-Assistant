@@ -6,6 +6,7 @@ using Logic.DTOs;
 using Logic.Models;
 using Logic.Services.Interfaces;
 using Data.Entities;
+using Data.Entities.Enums;
 using Data.Repositories;
 using Data.Repositories.Interfaces;
 using Logic.Agents.Interfaces;
@@ -17,6 +18,7 @@ public class CartService(
     ICartRepository cartItemRepository,
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
+    IPromotionRepository promotionRepository,
     IPromotionCheckerAgent promotionCheckerAgent,
     ISuggestionComposerAgent suggestionComposerAgent
 ) : ICartService
@@ -24,7 +26,85 @@ public class CartService(
     public async Task<CartGetDto> GetCartAsync()
     {
         var items = await cartItemRepository.GetAllWithProductAsync();
-        return new CartGetDto { Items = items.Select(MapToDto).ToList() };
+        var mappedItems = items.Select(MapToDto).ToList();
+        var subtotal = mappedItems.Sum(i => i.Subtotal);
+
+        var allPromotions = await promotionRepository.GetAllAsync();
+        var applied = ComputeAppliedPromotions(items, subtotal, allPromotions.Where(p => p.IsActive));
+        var totalDiscount = applied.Sum(p => p.Discount);
+
+        return new CartGetDto
+        {
+            Items = mappedItems,
+            Subtotal = subtotal,
+            AppliedPromotions = applied,
+            TotalDiscount = totalDiscount,
+            Total = Math.Max(0, subtotal - totalDiscount),
+        };
+    }
+
+    private static List<AppliedPromotionDto> ComputeAppliedPromotions(
+        List<Cart> items, decimal subtotal, IEnumerable<Promotion> promotions)
+    {
+        var result = new List<AppliedPromotionDto>();
+
+        foreach (var promo in promotions)
+        {
+            decimal discount = 0;
+
+            switch (promo.Type)
+            {
+                case PromotionType.Quantity when promo.ProductId.HasValue:
+                {
+                    var item = items.FirstOrDefault(i => i.ProductId == promo.ProductId.Value);
+                    if (item == null || item.Quantity < (int)promo.Threshold) continue;
+                    discount = promo.Reward == PromotionReward.PercentDiscount
+                        ? item.Product.Price * item.Quantity * promo.RewardValue / 100m
+                        : item.Product.Price * promo.RewardValue;
+                    break;
+                }
+                case PromotionType.Quantity when promo.CategoryId.HasValue:
+                {
+                    var catItems = items
+                        .Where(i => i.Product.Categories.Any(c => c.Id == promo.CategoryId.Value))
+                        .ToList();
+                    if (catItems.Sum(i => i.Quantity) < (int)promo.Threshold) continue;
+                    discount = promo.Reward == PromotionReward.PercentDiscount
+                        ? catItems.Sum(i => i.Product.Price * i.Quantity) * promo.RewardValue / 100m
+                        : catItems.Min(i => i.Product.Price) * promo.RewardValue;
+                    break;
+                }
+                case PromotionType.CartTotal when promo.CategoryId.HasValue:
+                {
+                    var catItems = items
+                        .Where(i => i.Product.Categories.Any(c => c.Id == promo.CategoryId.Value))
+                        .ToList();
+                    var catTotal = catItems.Sum(i => i.Product.Price * i.Quantity);
+                    if (catTotal < promo.Threshold) continue;
+                    discount = catTotal * promo.RewardValue / 100m;
+                    break;
+                }
+                case PromotionType.CartTotal when promo.ProductId.HasValue:
+                {
+                    if (subtotal < promo.Threshold || items.All(i => i.ProductId != promo.ProductId.Value)) continue;
+                    discount = subtotal * promo.RewardValue / 100m;
+                    break;
+                }
+                case PromotionType.CartTotal:
+                {
+                    if (subtotal < promo.Threshold) continue;
+                    discount = subtotal * promo.RewardValue / 100m;
+                    break;
+                }
+                default:
+                    continue;
+            }
+
+            if (discount > 0)
+                result.Add(new AppliedPromotionDto(promo.Id, promo.Name, Math.Round(discount, 2)));
+        }
+
+        return result;
     }
 
     public async Task<CartItemGetDto> AddItemAsync(AddCartItemDto dto)
@@ -130,5 +210,6 @@ public class CartService(
             ProductName = ci.Product.Name,
             UnitPrice = ci.Product.Price,
             Quantity = ci.Quantity,
+            Subtotal = ci.Product.Price * ci.Quantity,
         };
 }

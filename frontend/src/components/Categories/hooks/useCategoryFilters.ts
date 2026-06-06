@@ -18,7 +18,7 @@ export function useCategoryFilters(categories: Category[]) {
     return categories.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q)
+        c.description.toLowerCase().includes(q),
     );
   }, [categories, filters]);
 
@@ -26,7 +26,7 @@ export function useCategoryFilters(categories: Category[]) {
 
   function updateFilter<K extends keyof CategoryFilters>(
     key: K,
-    value: CategoryFilters[K]
+    value: CategoryFilters[K],
   ) {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
@@ -35,5 +35,11 @@ export function useCategoryFilters(categories: Category[]) {
     setFilters(EMPTY_FILTERS);
   }
 
-  return { filters, filteredCategories, activeFilterCount, updateFilter, clearFilters };
+  return {
+    filters,
+    filteredCategories,
+    activeFilterCount,
+    updateFilter,
+    clearFilters,
+  };
 }

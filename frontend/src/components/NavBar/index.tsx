@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { IconButton, Badge } from "@mui/material";
-import { useCart } from "@/context/CardContext/cart-context";
+import { useCart } from "@/context/CartContext/cart-context";
 
 function NavBar() {
   const [mode, setMode] = useState<"user" | "admin">("user");

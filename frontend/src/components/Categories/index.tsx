@@ -26,8 +26,13 @@ import { useCategoryFilters } from "./hooks/useCategoryFilters";
 
 function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const { filters, filteredCategories, activeFilterCount, updateFilter, clearFilters } =
-    useCategoryFilters(categories);
+  const {
+    filters,
+    filteredCategories,
+    activeFilterCount,
+    updateFilter,
+    clearFilters,
+  } = useCategoryFilters(categories);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);

@@ -4,11 +4,11 @@ import Home from "./components/Home";
 import Products from "./components/Products";
 import Categories from "./components/Categories";
 import Promotions from "./components/Promotions";
-import Cart from "./components/Cart";
+import CartDrawer from "./components/CartDrawer";
 import Shop from "./components/Shop";
 import { Routes, Route } from "react-router-dom";
 import NotFound from "./components/NotFound";
-import CartProvider from "./context/CardContext/CardProvider";
+import CartProvider from "./context/CartContext/CartProvider";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         <NavBar />
-        <Cart />
+        <CartDrawer />
         <Box component="main" sx={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<Home />} />

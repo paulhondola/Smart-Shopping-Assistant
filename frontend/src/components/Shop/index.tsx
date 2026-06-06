@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { productsApi } from "../../api/client/ProductApiClient";
 import { categoriesApi } from "../../api/client/CategoryApiClient";
 import type { Product } from "../../shared/types/Product";
-import { useCart } from "@/context/CardContext/cart-context";
+import { useCart } from "@/context/CartContext/cart-context";
 import { useShopFilters, type SortOption } from "./hooks/useShopFilters";
 import { ShopSidebar } from "./ShopSidebar";
 import { ShopProductCard } from "./ShopProductCard";
@@ -34,8 +34,14 @@ function Shop() {
   const [addingId, setAddingId] = useState<number | null>(null);
 
   const { addItem } = useCart();
-  const { filters, filteredProducts, priceMin, priceMax, updateFilter, clearFilters } =
-    useShopFilters(products);
+  const {
+    filters,
+    filteredProducts,
+    priceMin,
+    priceMax,
+    updateFilter,
+    clearFilters,
+  } = useShopFilters(products);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,7 +60,9 @@ function Shop() {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleAddToCart(product: Product) {
@@ -81,7 +89,14 @@ function Shop() {
       )}
 
       {/* Header row: title + sort */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
         <Typography variant="h4">Shop</Typography>
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>Sort by</InputLabel>

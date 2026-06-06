@@ -8,7 +8,7 @@ interface CategoryFilterBarProps {
   activeFilterCount: number;
   onFilterChange: <K extends keyof CategoryFilters>(
     key: K,
-    value: CategoryFilters[K]
+    value: CategoryFilters[K],
   ) => void;
   onClearFilters: () => void;
 }
