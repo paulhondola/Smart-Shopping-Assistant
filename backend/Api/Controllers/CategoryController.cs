@@ -1,5 +1,6 @@
 using Logic.DTOs.Categories;
 using Logic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -29,6 +30,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<CategoryGetDto>> Create([FromBody] CategoryCreateDto dto)
     {
@@ -36,6 +38,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
         return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult<CategoryGetDto>> Update(int id, [FromBody] CategoryUpdateDto dto)
     {
@@ -50,6 +53,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

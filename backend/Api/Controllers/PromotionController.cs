@@ -1,5 +1,6 @@
 using Logic.DTOs.Promotions;
 using Logic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -29,6 +30,7 @@ public class PromotionController(IPromotionService promotionService) : Controlle
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<PromotionGetDto>> Create([FromBody] PromotionCreateDto dto)
     {
@@ -36,6 +38,7 @@ public class PromotionController(IPromotionService promotionService) : Controlle
         return CreatedAtAction(nameof(GetById), new { id = promotion.Id }, promotion);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult<PromotionGetDto>> Update(
         int id,
@@ -53,6 +56,7 @@ public class PromotionController(IPromotionService promotionService) : Controlle
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

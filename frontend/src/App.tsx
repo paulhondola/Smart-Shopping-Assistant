@@ -9,6 +9,7 @@ import Shop from "./components/Shop";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import RequireAuth from "./components/common/RequireAuth";
+import RequireAdmin from "./components/common/RequireAdmin";
 import { Routes, Route } from "react-router-dom";
 import NotFound from "./components/NotFound";
 import AuthProvider from "./context/AuthContext/AuthProvider";
@@ -39,25 +40,25 @@ function App() {
               <Route
                 path="/products"
                 element={
-                  <RequireAuth>
+                  <RequireAdmin>
                     <Products />
-                  </RequireAuth>
+                  </RequireAdmin>
                 }
               />
               <Route
                 path="/categories"
                 element={
-                  <RequireAuth>
+                  <RequireAdmin>
                     <Categories />
-                  </RequireAuth>
+                  </RequireAdmin>
                 }
               />
               <Route
                 path="/promotions"
                 element={
-                  <RequireAuth>
+                  <RequireAdmin>
                     <Promotions />
-                  </RequireAuth>
+                  </RequireAdmin>
                 }
               />
               <Route path="*" element={<NotFound />} />

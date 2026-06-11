@@ -1,5 +1,6 @@
 using Logic.DTOs.Products;
 using Logic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -34,6 +35,7 @@ public class ProductController(IProductService productService) : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ProductGetDto>> Create([FromBody] ProductCreateDto dto)
     {
@@ -41,6 +43,7 @@ public class ProductController(IProductService productService) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult<ProductGetDto>> Update(int id, [FromBody] ProductUpdateDto dto)
     {
@@ -55,6 +58,7 @@ public class ProductController(IProductService productService) : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
