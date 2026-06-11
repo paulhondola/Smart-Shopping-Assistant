@@ -1,10 +1,12 @@
 import { type Cart, toCartModel } from "@/shared/types/Cart";
-import { http } from "../base/http";
+import { http } from "@/api/base/http";
 import type {
   AddCartItemInput,
   CartModel,
   UpdateCartItemInput,
-} from "../models/CartModel";
+} from "@/api/models/CartModel";
+import { type Analysis, toAnalysis } from "@/shared/types/Analysis";
+import type { AnalysisModel } from "@/api/models/AnalysisModel";
 
 export const cartApi = {
   get: async (): Promise<Cart> => {
@@ -20,4 +22,7 @@ export const cartApi = {
     await http.put(`/cart/items/${itemId}`, data);
   },
   removeItem: (itemId: number) => http.remove<void>(`/cart/items/${itemId}`),
+  analyze: async (): Promise<Analysis> => {
+    return toAnalysis(await http.get<AnalysisModel>("/cart/analyze"));
+  },
 };

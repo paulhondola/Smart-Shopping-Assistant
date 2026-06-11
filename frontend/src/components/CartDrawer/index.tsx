@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Divider,
   Drawer,
   IconButton,
@@ -12,11 +13,15 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { useCart } from "../../context/CartContext/cart-context";
-
+import { useState } from "react";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import AnalyzeDialog from "./AnalyzeDialog";
 function CartDrawer() {
   const { cart, open, closeCart, updateQuantity, removeProduct } = useCart();
 
   const isEmpty = cart === null || cart.items.length === 0;
+
+  const [analyzeOpen, setAnalyzeOpen] = useState(false);
 
   return (
     <Drawer anchor="right" open={open} onClose={closeCart}>
@@ -91,9 +96,7 @@ function CartDrawer() {
                   <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
                     <IconButton
                       size="small"
-                      onClick={() =>
-                        updateQuantity(item.id, item.quantity - 1)
-                      }
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       disabled={item.quantity <= 1}
                     >
                       <RemoveIcon fontSize="small" />
@@ -105,9 +108,7 @@ function CartDrawer() {
                     </Typography>
                     <IconButton
                       size="small"
-                      onClick={() =>
-                        updateQuantity(item.id, item.quantity + 1)
-                      }
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
                     >
                       <AddIcon fontSize="small" />
                     </IconButton>
@@ -175,7 +176,9 @@ function CartDrawer() {
 
                   <Divider sx={{ my: 1 }} />
 
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography
                       variant="body2"
                       color="success.main"
@@ -201,7 +204,20 @@ function CartDrawer() {
                 <Typography variant="h6">Total</Typography>
                 <Typography variant="h6">{cart.totalLabel}</Typography>
               </Box>
+
+              <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<AutoAwesomeIcon />}
+                onClick={() => setAnalyzeOpen(true)}
+                sx={{ mt: 2 }}
+              >
+                AI Analyze
+              </Button>
             </Box>
+            {analyzeOpen && (
+              <AnalyzeDialog onClose={() => setAnalyzeOpen(false)} />
+            )}
           </>
         )}
       </Box>
