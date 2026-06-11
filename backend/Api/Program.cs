@@ -8,8 +8,10 @@ using Logic.Agents;
 using Logic.Agents.Interfaces;
 using Logic.Services;
 using Logic.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
+using Microsoft.IdentityModel.Tokens;
 using OpenAI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,17 +32,59 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+// ── JWT auth ──────────────────────────────────────────────────────────────────
+var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
+builder.Services.Configure<JwtOptions>(jwtSection);
+builder.Services.Configure<JwtTokenIssuerOptions>(jwtSection);
+
+var jwtOpts = jwtSection.Get<JwtOptions>();
+
+if (jwtOpts is not null)
+{
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = jwtOpts.Issuer,
+                ValidAudience = jwtOpts.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Convert.FromBase64String(jwtOpts.SigningKey)
+                ),
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.FromSeconds(30),
+            };
+        });
+}
+else
+{
+    builder.Services.AddAuthentication();
+}
+
+builder.Services.AddAuthorization();
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Repositories ─────────────────────────────────────────────────────────────
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+// ─────────────────────────────────────────────────────────────────────────────
 
 builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
+// ── Services ──────────────────────────────────────────────────────────────────
+builder.Services.AddScoped<IJwtTokenIssuer, JwtTokenIssuer>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<ICartService, CartService>();
+// ─────────────────────────────────────────────────────────────────────────────
 
 var openAi =
     builder.Configuration.GetSection(OpenAiOptions.SectionName).Get<OpenAiOptions>()
@@ -73,10 +117,15 @@ else
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowAnyOrigin",
+        "FrontendOrigin",
         corsPolicyBuilder =>
         {
-            corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            corsPolicyBuilder
+                .WithOrigins(
+                    builder.Configuration["Cors:FrontendOrigin"] ?? "http://localhost:5173"
+                )
+                .AllowAnyMethod()
+                .AllowAnyHeader();
         }
     );
 });
@@ -104,10 +153,11 @@ if (app.Environment.IsDevelopment())
     );
 }
 
-app.UseCors("AllowAnyOrigin");
+app.UseCors("FrontendOrigin");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

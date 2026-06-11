@@ -1,12 +1,14 @@
 using Logic.DTOs.Cart;
 using Logic.Models;
 using Logic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [Route("api/cart")]
 [ApiController]
+[Authorize]
 public class CartController(ICartService cartService)
     : ControllerBase
 {
