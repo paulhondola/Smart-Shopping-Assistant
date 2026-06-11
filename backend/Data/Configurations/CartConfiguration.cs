@@ -8,16 +8,18 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
 {
     public void Configure(EntityTypeBuilder<Cart> builder)
     {
-        builder.ToTable("CartItems");
-
+        builder.ToTable("Carts");
         builder.HasKey(c => c.Id);
 
-        builder.Property(c => c.Quantity).IsRequired();
+        builder.Property(c => c.CreatedAt).IsRequired();
+        builder.Property(c => c.UpdatedAt).IsRequired();
+
+        builder.HasIndex(c => c.UserId).IsUnique();
 
         builder
-            .HasOne(c => c.Product)
-            .WithOne(p => p.Cart)
-            .HasForeignKey<Cart>(c => c.ProductId)
+            .HasOne(c => c.User)
+            .WithOne(u => u.Cart)
+            .HasForeignKey<Cart>(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

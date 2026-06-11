@@ -3,7 +3,7 @@ using Data.Seeding.Interfaces;
 namespace Data.Seeding;
 
 public class DatabaseSeeder(
-    SmartShoppingAssistantDbContext context,
+    UserSeeder userSeeder,
     CategorySeeder categorySeeder,
     ProductSeeder productSeeder,
     PromotionSeeder promotionSeeder,
@@ -12,6 +12,7 @@ public class DatabaseSeeder(
 {
     public async Task SeedAsync()
     {
+        await userSeeder.SeedAsync();
         await categorySeeder.SeedAsync();
         await productSeeder.SeedAsync();
         await promotionSeeder.SeedAsync();

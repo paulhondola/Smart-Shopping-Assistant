@@ -8,8 +8,7 @@ public class Product
     public decimal Price { get; set; }
     public string? ImageUrl { get; set; }
 
-    // Navigation properties
-    public Cart? Cart { get; set; }
+    public ICollection<CartItem> CartItems { get; set; } = [];
     public ICollection<Category> Categories { get; set; } = [];
     public ICollection<Promotion> Promotions { get; set; } = [];
 }

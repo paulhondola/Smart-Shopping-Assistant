@@ -1,3 +1,4 @@
+using Api.Auth;
 using Api.Options;
 using Data;
 using Data.Repositories;
@@ -25,6 +26,7 @@ builder.Services.AddDbContext<SmartShoppingAssistantDbContext>(options =>
     )
 );
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -32,6 +34,8 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+
+builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -77,6 +81,7 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.AddScoped<UserSeeder>();
 builder.Services.AddScoped<CategorySeeder>();
 builder.Services.AddScoped<ProductSeeder>();
 builder.Services.AddScoped<PromotionSeeder>();

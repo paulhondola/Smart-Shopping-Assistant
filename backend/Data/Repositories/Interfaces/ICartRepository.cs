@@ -2,10 +2,15 @@ using Data.Entities;
 
 namespace Data.Repositories.Interfaces;
 
-public interface ICartRepository : IRepository<Cart>
+public interface ICartRepository
 {
-    Task<List<Cart>> GetAllWithProductAsync();
-    Task<Cart?> GetByProductIdAsync(int productId);
-    Task<Cart> GetByIdWithProductAsync(int id);
-    Task ClearAsync();
+    Task<Cart> GetOrCreateForUserAsync(int userId, CancellationToken ct = default);
+
+    Task<CartItem?> FindItemAsync(int cartId, int productId, CancellationToken ct = default);
+    Task<CartItem?> FindItemByIdAsync(int cartId, int itemId, CancellationToken ct = default);
+
+    Task<CartItem> AddItemAsync(CartItem item, CancellationToken ct = default);
+    Task UpdateItemAsync(CartItem item, CancellationToken ct = default);
+    Task RemoveItemAsync(CartItem item, CancellationToken ct = default);
+    Task ClearAsync(int cartId, CancellationToken ct = default);
 }

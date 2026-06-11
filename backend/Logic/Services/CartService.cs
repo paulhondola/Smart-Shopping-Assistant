@@ -15,22 +15,24 @@ using Logic.DTOs.Cart;
 namespace Logic.Services;
 
 public class CartService(
-    ICartRepository cartItemRepository,
+    ICartRepository cartRepository,
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
     IPromotionRepository promotionRepository,
     IPromotionCheckerAgent promotionCheckerAgent,
-    ISuggestionComposerAgent suggestionComposerAgent
+    ISuggestionComposerAgent suggestionComposerAgent,
+    ICurrentUserAccessor currentUser
 ) : ICartService
 {
     public async Task<CartGetDto> GetCartAsync()
     {
-        var items = await cartItemRepository.GetAllWithProductAsync();
-        var mappedItems = items.Select(MapToDto).ToList();
+        var userId = currentUser.RequireUserId();
+        var cart = await cartRepository.GetOrCreateForUserAsync(userId);
+        var mappedItems = cart.Items.Select(MapToDto).ToList();
         var subtotal = mappedItems.Sum(i => i.Subtotal);
 
         var allPromotions = await promotionRepository.GetAllAsync();
-        var applied = ComputeAppliedPromotions(items, subtotal, allPromotions.Where(p => p.IsActive));
+        var applied = ComputeAppliedPromotions(cart.Items.ToList(), subtotal, allPromotions.Where(p => p.IsActive));
         var totalDiscount = applied.Sum(p => p.Discount);
 
         return new CartGetDto
@@ -44,7 +46,7 @@ public class CartService(
     }
 
     private static List<AppliedPromotionDto> ComputeAppliedPromotions(
-        List<Cart> items, decimal subtotal, IEnumerable<Promotion> promotions)
+        List<CartItem> items, decimal subtotal, IEnumerable<Promotion> promotions)
     {
         var result = new List<AppliedPromotionDto>();
 
@@ -111,39 +113,59 @@ public class CartService(
     {
         await productRepository.GetByIdAsync(dto.ProductId); // throws if not found
 
-        var existing = await cartItemRepository.GetByProductIdAsync(dto.ProductId);
+        var userId = currentUser.RequireUserId();
+        var cart = await cartRepository.GetOrCreateForUserAsync(userId);
+
+        var existing = await cartRepository.FindItemAsync(cart.Id, dto.ProductId);
         if (existing != null)
         {
             existing.Quantity += dto.Quantity;
-            await cartItemRepository.UpdateAsync(existing);
+            await cartRepository.UpdateItemAsync(existing);
             return MapToDto(existing);
         }
 
-        var item = new Cart { ProductId = dto.ProductId, Quantity = dto.Quantity };
-        await cartItemRepository.AddAsync(item);
-        var added = await cartItemRepository.GetByIdWithProductAsync(item.Id);
+        var item = new CartItem { CartId = cart.Id, ProductId = dto.ProductId, Quantity = dto.Quantity };
+        await cartRepository.AddItemAsync(item);
+        var added = await cartRepository.FindItemByIdAsync(cart.Id, item.Id)
+            ?? throw new Exception($"Cart item {item.Id} not found after insert");
         return MapToDto(added);
     }
 
     public async Task<CartItemGetDto> UpdateItemAsync(int itemId, UpdateCartItemDto dto)
     {
-        var item = await cartItemRepository.GetByIdWithProductAsync(itemId);
+        var userId = currentUser.RequireUserId();
+        var cart = await cartRepository.GetOrCreateForUserAsync(userId);
+        var item = await cartRepository.FindItemByIdAsync(cart.Id, itemId)
+            ?? throw new Exception($"Cart item {itemId} not found");
         item.Quantity = dto.Quantity;
-        await cartItemRepository.UpdateAsync(item);
+        await cartRepository.UpdateItemAsync(item);
         return MapToDto(item);
     }
 
-    public Task RemoveItemAsync(int itemId) => cartItemRepository.DeleteAsync(itemId);
+    public async Task RemoveItemAsync(int itemId)
+    {
+        var userId = currentUser.RequireUserId();
+        var cart = await cartRepository.GetOrCreateForUserAsync(userId);
+        var item = await cartRepository.FindItemByIdAsync(cart.Id, itemId)
+            ?? throw new Exception($"Cart item {itemId} not found");
+        await cartRepository.RemoveItemAsync(item);
+    }
 
-    public Task ClearCartAsync() => cartItemRepository.ClearAsync();
+    public async Task ClearCartAsync()
+    {
+        var userId = currentUser.RequireUserId();
+        var cart = await cartRepository.GetOrCreateForUserAsync(userId);
+        await cartRepository.ClearAsync(cart.Id);
+    }
 
     public async Task<AnalysisResponse> AnalyzeCartAsync()
     {
-        var cart = await cartItemRepository.GetAllWithProductAsync();
+        var userId = currentUser.RequireUserId();
+        var cart = await cartRepository.GetOrCreateForUserAsync(userId);
         var categories = await categoryRepository.GetAllAsync();
 
         var cartJson = JsonSerializer.Serialize(
-            cart.Select(c => new
+            cart.Items.Select(c => new
             {
                 c.ProductId,
                 ProductName = c.Product.Name,
@@ -202,7 +224,7 @@ public class CartService(
             ?? throw new InvalidOperationException("Failed to deserialize analysis response.");
     }
 
-    private static CartItemGetDto MapToDto(Cart ci) =>
+    private static CartItemGetDto MapToDto(CartItem ci) =>
         new()
         {
             Id = ci.Id,
