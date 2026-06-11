@@ -32,7 +32,7 @@ export function AiFeatureSection() {
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={6} alignItems="center">
+        <Grid container spacing={6} sx={{ alignItems: "center" }}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               variant="outlined"

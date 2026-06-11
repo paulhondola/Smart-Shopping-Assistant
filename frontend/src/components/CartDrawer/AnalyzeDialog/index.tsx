@@ -37,7 +37,6 @@ function AnalyzeDialog({ onClose }: AnalyzeDialogProps) {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [decisions, setDecisions] = useState<Record<number, Decision>>({});
   const [progress, setProgress] = useState(0);
-  const [message, setMessage] = useState(loadingMessages[0]);
   const [messageIndex, setMessageIndex] = useState(0);
 
   const { addItem } = useCart();

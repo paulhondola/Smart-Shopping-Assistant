@@ -1,23 +1,22 @@
-import { AppBar, Box, Button, Toolbar } from "@mui/material";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Badge,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import { useState } from "react";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { IconButton, Badge } from "@mui/material";
 import { useCart } from "@/context/CartContext/cart-context";
+import { useAuth } from "@/context/AuthContext/auth-context";
 
 function NavBar() {
-  const [mode, setMode] = useState<"user" | "admin">("user");
-  const navigate = useNavigate();
   const { cart, openCart } = useCart();
-  const handleModeChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    value: "user" | "admin",
-  ) => {
-    setMode(value);
-    navigate("/");
-  };
+  const { user, logout } = useAuth();
+  const isAdmin = user?.role === "Admin";
 
   return (
     <AppBar
@@ -59,7 +58,14 @@ function NavBar() {
           <Button component={NavLink} to="/" end color="inherit">
             Home
           </Button>
-          {mode === "admin" ? (
+
+          {user && !isAdmin && (
+            <Button component={NavLink} to="/shop" color="inherit">
+              Shop
+            </Button>
+          )}
+
+          {isAdmin && (
             <>
               <Button component={NavLink} to="/categories" end color="inherit">
                 Categories
@@ -71,30 +77,43 @@ function NavBar() {
                 Promotions
               </Button>
             </>
-          ) : (
-            <Button component={NavLink} to="/shop" color="inherit">
-              Shop
-            </Button>
           )}
         </Box>
 
-        <ToggleButtonGroup
-          value={mode}
-          exclusive
-          size="small"
-          sx={{ mr: 2 }}
-          onChange={handleModeChange}
-        >
-          <ToggleButton value="user">User</ToggleButton>
-          <ToggleButton value="admin">Admin</ToggleButton>
-        </ToggleButtonGroup>
-
-        {mode === "user" && (
-          <IconButton color="inherit" onClick={openCart}>
-            <Badge badgeContent={cart?.itemCount ?? 0} color="primary">
-              <ShoppingCartIcon />
-            </Badge>
-          </IconButton>
+        {user ? (
+          <>
+            <Typography
+              variant="body2"
+              sx={{ mr: 1, color: "text.secondary", display: { xs: "none", sm: "block" } }}
+            >
+              {user.displayName}
+            </Typography>
+            <Button color="inherit" onClick={logout} size="small">
+              Logout
+            </Button>
+            {!isAdmin && (
+              <IconButton color="inherit" onClick={openCart} sx={{ ml: 0.5 }}>
+                <Badge badgeContent={cart?.itemCount ?? 0} color="primary">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+            )}
+          </>
+        ) : (
+          <>
+            <Button component={NavLink} to="/login" color="inherit" size="small">
+              Login
+            </Button>
+            <Button
+              component={NavLink}
+              to="/register"
+              variant="contained"
+              size="small"
+              sx={{ ml: 1 }}
+            >
+              Register
+            </Button>
+          </>
         )}
       </Toolbar>
     </AppBar>

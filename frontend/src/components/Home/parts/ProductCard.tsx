@@ -7,7 +7,6 @@ import {
   Typography,
   Chip,
   Button,
-  Box,
   Stack,
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -51,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
           sx={{ objectFit: 'contain', bgcolor: '#1a1916', p: 2 }}
         />
         <CardContent sx={{ flex: 1 }}>
-          <Stack direction="row" spacing={0.5} flexWrap="wrap" mb={1}>
+          <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", mb: 1 }}>
             {product.categories.slice(0, 2).map((cat) => (
               <Chip
                 key={cat}

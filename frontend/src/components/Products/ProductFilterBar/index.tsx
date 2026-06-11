@@ -2,7 +2,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  Chip,
   InputAdornment,
   TextField,
 } from "@mui/material";
@@ -71,16 +70,6 @@ export default function ProductFilterBar({
         options={allCategories}
         value={filters.selectedCategories}
         onChange={(_, value) => onFilterChange("selectedCategories", value)}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip
-              label={option}
-              size="small"
-              {...getTagProps({ index })}
-              key={option}
-            />
-          ))
-        }
         renderInput={(params) => (
           <TextField {...params} placeholder="Filter by category" />
         )}

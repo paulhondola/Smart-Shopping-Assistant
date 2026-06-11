@@ -1,5 +1,13 @@
 import axios from "axios";
 
+const TOKEN_KEY = "auth_token";
+
+export const tokenStore = {
+  get: () => localStorage.getItem(TOKEN_KEY),
+  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -7,15 +15,29 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = tokenStore.get();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const data = error.response?.data;
+    if (error.response?.status === 401) {
+      tokenStore.clear();
+      window.dispatchEvent(new CustomEvent("auth:logout"));
+    }
 
+    const data = error.response?.data;
     const message =
-      typeof data === "string" && data !== ""
-        ? data
-        : error.message || "An unexpected error occurred";
+      typeof data === "object" && data?.message
+        ? data.message
+        : typeof data === "string" && data !== ""
+          ? data
+          : error.message || "An unexpected error occurred";
 
     return Promise.reject(new Error(message));
   },
