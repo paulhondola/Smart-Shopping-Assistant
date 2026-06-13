@@ -46,4 +46,12 @@ public class AuthController(IAuthService authService) : ControllerBase
         var user = await authService.GetCurrentUserAsync();
         return Ok(user);
     }
+
+    [HttpPut("me")]
+    [Authorize]
+    public async Task<ActionResult<UserGetDto>> UpdateProfile([FromBody] UpdateProfileDto dto)
+    {
+        var result = await authService.UpdateProfileAsync(dto);
+        return Ok(result);
+    }
 }

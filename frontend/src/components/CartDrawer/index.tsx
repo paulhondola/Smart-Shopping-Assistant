@@ -12,17 +12,23 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import { useCart } from "@/context/CartContext/cart-context";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AnalyzeDialog from "./AnalyzeDialog";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import EmptyState from "@/components/common/EmptyState";
 
 function CartDrawer() {
-  const { cart, open, closeCart, updateQuantity, removeProduct } = useCart();
+  const { cart, open, closeCart, updateQuantity, removeProduct, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const isEmpty = cart === null || cart.items.length === 0;
 
   const [analyzeOpen, setAnalyzeOpen] = useState(false);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
 
   return (
     <Drawer anchor="right" open={open} onClose={closeCart}>
@@ -50,7 +56,12 @@ function CartDrawer() {
         </Box>
 
         {isEmpty ? (
-          <Typography color="text.secondary">Your cart is empty.</Typography>
+          <EmptyState
+            icon={<ShoppingBagIcon />}
+            title="Your cart is empty"
+            description="Browse the shop and add items to get started."
+            action={{ label: "Go to Shop", onClick: () => { closeCart(); navigate("/shop"); } }}
+          />
         ) : (
           <>
             <List sx={{ flexGrow: 1, overflowY: "auto" }}>
@@ -209,6 +220,16 @@ function CartDrawer() {
               <Button
                 fullWidth
                 variant="outlined"
+                color="error"
+                onClick={() => setConfirmClearOpen(true)}
+                sx={{ mt: 1 }}
+              >
+                Clear cart
+              </Button>
+
+              <Button
+                fullWidth
+                variant="outlined"
                 startIcon={<AutoAwesomeIcon />}
                 onClick={() => setAnalyzeOpen(true)}
                 sx={{ mt: 2 }}
@@ -219,6 +240,17 @@ function CartDrawer() {
             {analyzeOpen && (
               <AnalyzeDialog onClose={() => setAnalyzeOpen(false)} />
             )}
+            <ConfirmDialog
+              open={confirmClearOpen}
+              title="Clear cart?"
+              description="Remove all items from your cart?"
+              confirmLabel="Clear"
+              onConfirm={async () => {
+                setConfirmClearOpen(false);
+                await clearCart();
+              }}
+              onCancel={() => setConfirmClearOpen(false)}
+            />
           </>
         )}
       </Box>

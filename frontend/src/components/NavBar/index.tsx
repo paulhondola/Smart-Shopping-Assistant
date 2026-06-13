@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   AppBar,
   Box,
@@ -17,6 +18,20 @@ function NavBar() {
   const { cart, openCart } = useCart();
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "Admin";
+
+  const prevItemCount = useRef<number>(cart?.itemCount ?? 0);
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  useEffect(() => {
+    const currentCount = cart?.itemCount ?? 0;
+    if (currentCount > prevItemCount.current) {
+      setIsPulsing(true);
+      const timer = setTimeout(() => setIsPulsing(false), 400);
+      prevItemCount.current = currentCount;
+      return () => clearTimeout(timer);
+    }
+    prevItemCount.current = currentCount;
+  }, [cart?.itemCount]);
 
   return (
     <AppBar
@@ -83,8 +98,10 @@ function NavBar() {
         {user ? (
           <>
             <Typography
+              component={Link}
+              to="/profile"
               variant="body2"
-              sx={{ mr: 1, color: "text.secondary", display: { xs: "none", sm: "block" } }}
+              sx={{ mr: 1, color: "text.secondary", display: { xs: "none", sm: "block" }, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
             >
               {user.displayName}
             </Typography>
@@ -93,7 +110,7 @@ function NavBar() {
             </Button>
             {!isAdmin && (
               <IconButton color="inherit" onClick={openCart} sx={{ ml: 0.5 }}>
-                <Badge badgeContent={cart?.itemCount ?? 0} color="primary">
+                <Badge badgeContent={cart?.itemCount ?? 0} color="primary" className={isPulsing ? "cart-badge-pulse" : undefined}>
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>

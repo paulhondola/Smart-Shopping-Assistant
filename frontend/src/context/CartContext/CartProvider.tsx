@@ -5,6 +5,7 @@ import { cartApi } from "@/api/client/CartApiClient";
 import { CartContext } from "./cart-context";
 import { useAuth } from "@/context/AuthContext/auth-context";
 import { queryKeys } from "@/lib/queryKeys";
+import { showToast } from "@/lib/toast";
 
 function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -31,7 +32,11 @@ function CartProvider({ children }: { children: ReactNode }) {
       productId: number;
       quantity: number;
     }) => cartApi.addItem({ productId, quantity }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.cart }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.cart });
+      showToast("Added to cart", "success");
+    },
+    onError: () => showToast("Cart update failed", "error"),
   });
 
   const updateQuantityMutation = useMutation({
@@ -42,12 +47,29 @@ function CartProvider({ children }: { children: ReactNode }) {
       productId: number;
       quantity: number;
     }) => cartApi.updateItem(productId, { quantity }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.cart }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.cart });
+      showToast("Quantity updated", "success");
+    },
+    onError: () => showToast("Cart update failed", "error"),
   });
 
   const removeProductMutation = useMutation({
     mutationFn: (productId: number) => cartApi.removeItem(productId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.cart }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.cart });
+      showToast("Item removed", "success");
+    },
+    onError: () => showToast("Cart update failed", "error"),
+  });
+
+  const clearCartMutation = useMutation({
+    mutationFn: cartApi.clearCart,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.cart });
+      showToast("Cart cleared", "success");
+    },
+    onError: () => showToast("Failed to clear cart", "error"),
   });
 
   return (
@@ -63,6 +85,7 @@ function CartProvider({ children }: { children: ReactNode }) {
           updateQuantityMutation.mutateAsync({ productId, quantity }),
         removeProduct: (productId) =>
           removeProductMutation.mutateAsync(productId),
+        clearCart: () => clearCartMutation.mutateAsync(),
       }}
     >
       {children}

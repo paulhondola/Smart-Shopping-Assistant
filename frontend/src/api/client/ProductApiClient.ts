@@ -24,4 +24,8 @@ export const productsApi = {
   remove: async (id: number) => {
     await http.remove<void>(`/products/${id}`);
   },
+
+  getById: async (id: number): Promise<Product> => {
+    return toProduct(await http.get<ProductOutput>(`/products/${id}`));
+  },
 };

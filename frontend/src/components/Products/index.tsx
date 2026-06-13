@@ -1,9 +1,11 @@
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import { useProducts, useDeleteProduct } from "@/hooks/useProducts";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
+import { showToast } from "@/lib/toast";
 import ProductFilterBar from "./ProductFilterBar";
 import { useProductFilters } from "./hooks/useProductFilters";
 import {
@@ -27,6 +29,7 @@ import type { Product } from "../../shared/types/Product";
 import PageHeader from "../common/PageHeader";
 import ProductFormDialog from "./ProductsFormDialog";
 import ConfirmDialog from "../common/ConfirmDialog";
+import EmptyState from "@/components/common/EmptyState";
 
 function Products() {
   const { data: products = [], isLoading, isError, error } = useProducts();
@@ -58,7 +61,12 @@ function Products() {
   async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
-    await deleteProduct.mutateAsync(deleting.id);
+    try {
+      await deleteProduct.mutateAsync(deleting.id);
+      showToast("Product deleted", "success");
+    } catch {
+      showToast("Delete failed", "error");
+    }
   }
 
   return (
@@ -148,10 +156,13 @@ function Products() {
               ))}
               {filteredProducts.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    {products.length === 0
-                      ? "No products yet."
-                      : "No products match the current filters."}
+                  <TableCell colSpan={6} sx={{ border: "none" }}>
+                    <EmptyState
+                      icon={<InventoryIcon />}
+                      title={products.length === 0 ? "No products yet" : "No results"}
+                      description={products.length === 0 ? "Add your first product to get started." : "No products match the current filters."}
+                      action={products.length === 0 ? { label: "Add Product", onClick: handleAdd } : undefined}
+                    />
                   </TableCell>
                 </TableRow>
               )}

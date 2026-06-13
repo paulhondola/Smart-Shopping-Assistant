@@ -3,6 +3,7 @@ import { productsApi } from "@/api/client/ProductApiClient";
 import type { ProductInput } from "@/api/models/ProductModel";
 import type { Category } from "@/shared/types/Category";
 import type { Product } from "@/shared/types/Product";
+import { showToast } from "@/lib/toast";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import {
   Alert,
@@ -91,6 +92,7 @@ function ProductFormDialog({
       } else {
         await productsApi.create(data);
       }
+      showToast(isEditing ? "Product updated" : "Product created", "success");
       onSaved();
     } catch (err) {
       setError((err as Error).message);

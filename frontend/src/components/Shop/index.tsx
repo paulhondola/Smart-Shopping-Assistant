@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import { useProducts } from "@/hooks/useProducts";
@@ -19,6 +20,7 @@ import { useCart } from "@/context/CartContext/cart-context";
 import { useShopFilters, type SortOption } from "./hooks/useShopFilters";
 import { ShopSidebar } from "./ShopSidebar";
 import { ShopProductCard } from "./ShopProductCard";
+import EmptyState from "@/components/common/EmptyState";
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "price-asc", label: "Price: Low to High" },
@@ -144,18 +146,13 @@ function Shop() {
                 />
               ))}
               {filteredProducts.length === 0 && (
-                <Box sx={{ gridColumn: "1/-1", textAlign: "center", mt: 4 }}>
-                  <Typography color="text.secondary">
-                    No products match your filters.{" "}
-                    <Typography
-                      component="span"
-                      color="primary"
-                      sx={{ cursor: "pointer", textDecoration: "underline" }}
-                      onClick={clearFilters}
-                    >
-                      Clear filters
-                    </Typography>
-                  </Typography>
+                <Box sx={{ gridColumn: "1/-1" }}>
+                  <EmptyState
+                    icon={<SearchOffIcon />}
+                    title="No results"
+                    description="No products match your filters."
+                    action={{ label: "Clear filters", onClick: clearFilters }}
+                  />
                 </Box>
               )}
             </Box>

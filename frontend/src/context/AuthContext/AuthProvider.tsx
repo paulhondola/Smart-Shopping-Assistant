@@ -4,6 +4,7 @@ import { tokenStore } from "@/api/base/http";
 import { toUser } from "@/shared/types/User";
 import type { User } from "@/shared/types/User";
 import { AuthContext } from "./auth-context";
+import { showToast } from "@/lib/toast";
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -12,6 +13,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     tokenStore.clear();
     setUser(null);
+    showToast("Signed out", "info");
   }, []);
 
   // Rehydrate from localStorage on mount
@@ -35,9 +37,16 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }, [logout]);
 
   const login = async (email: string, password: string) => {
-    const response = await authApi.login({ email, password });
-    tokenStore.set(response.token);
-    setUser(toUser(response.user));
+    try {
+      const response = await authApi.login({ email, password });
+      tokenStore.set(response.token);
+      const u = toUser(response.user);
+      setUser(u);
+      showToast(`Welcome back, ${u.displayName}`, "success");
+    } catch (err) {
+      showToast("Authentication failed", "error");
+      throw err;
+    }
   };
 
   const register = async (
@@ -45,13 +54,24 @@ function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     displayName: string,
   ) => {
-    const response = await authApi.register({ email, password, displayName });
-    tokenStore.set(response.token);
-    setUser(toUser(response.user));
+    try {
+      const response = await authApi.register({ email, password, displayName });
+      tokenStore.set(response.token);
+      setUser(toUser(response.user));
+      showToast("Account created", "success");
+    } catch (err) {
+      showToast("Authentication failed", "error");
+      throw err;
+    }
+  };
+
+  const updateProfile = async (displayName: string) => {
+    const dto = await authApi.updateProfile({ displayName });
+    setUser(toUser(dto));
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

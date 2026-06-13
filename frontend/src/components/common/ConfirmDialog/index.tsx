@@ -12,7 +12,7 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -32,7 +32,7 @@ function ConfirmDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>
-        <Button color="error" variant="contained" onClick={onConfirm}>
+        <Button color="error" variant="contained" onClick={() => void onConfirm()}>
           {confirmLabel}
         </Button>
       </DialogActions>

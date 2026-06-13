@@ -1,5 +1,6 @@
 import { categoriesApi } from "@/api/client/CategoryApiClient";
 import type { Category } from "@/shared/types/Category";
+import { showToast } from "@/lib/toast";
 import {
   Alert,
   Button,
@@ -44,6 +45,7 @@ function CategoryFormDialog({
       } else {
         await categoriesApi.create(data);
       }
+      showToast(isEditing ? "Category updated" : "Category created", "success");
       onSaved();
     } catch (err) {
       setError((err as Error).message);

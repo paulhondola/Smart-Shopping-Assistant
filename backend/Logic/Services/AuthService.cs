@@ -58,4 +58,22 @@ public class AuthService(
             Role = user.Role.ToString(),
         };
     }
+
+    public async Task<UserGetDto> UpdateProfileAsync(UpdateProfileDto dto, CancellationToken ct = default)
+    {
+        var userId = currentUser.RequireUserId();
+        var user = await userRepository.FindByIdAsync(userId, ct)
+            ?? throw new InvalidOperationException("Authenticated user not found.");
+
+        user.DisplayName = dto.DisplayName.Trim();
+        await userRepository.UpdateAsync(user, ct);
+
+        return new UserGetDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            DisplayName = user.DisplayName,
+            Role = user.Role.ToString(),
+        };
+    }
 }

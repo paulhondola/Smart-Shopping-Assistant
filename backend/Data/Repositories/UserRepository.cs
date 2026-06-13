@@ -18,4 +18,11 @@ public class UserRepository(SmartShoppingAssistantDbContext context) : IUserRepo
         await context.SaveChangesAsync(ct);
         return user;
     }
+
+    public async Task<User> UpdateAsync(User user, CancellationToken ct = default)
+    {
+        context.Users.Update(user);
+        await context.SaveChangesAsync(ct);
+        return user;
+    }
 }

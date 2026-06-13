@@ -1,6 +1,7 @@
 import { categoriesApi } from "@/api/client/CategoryApiClient";
 import { productsApi } from "@/api/client/ProductApiClient";
 import { promotionsApi } from "@/api/client/PromotionsApiClient";
+import { showToast } from "@/lib/toast";
 import type { PromotionInput } from "@/api/models/PromotionsModel";
 import { PromotionReward, PromotionType } from "@/api/models/PromotionsModel";
 import type { Category } from "@/shared/types/Category";
@@ -111,6 +112,7 @@ function PromotionFormDialog({
       } else {
         await promotionsApi.create(payload);
       }
+      showToast(isEditing ? "Promotion updated" : "Promotion created", "success");
       onSaved();
     } catch (err) {
       setError((err as Error).message);

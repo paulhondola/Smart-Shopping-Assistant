@@ -9,6 +9,7 @@ export interface CartContextValue {
   addItem: (productId: number, quantity: number) => Promise<void>;
   updateQuantity: (productId: number, quantity: number) => Promise<void>;
   removeProduct: (productId: number) => Promise<void>;
+  clearCart: () => Promise<void>;
 }
 
 export const CartContext = createContext<CartContextValue | null>(null);

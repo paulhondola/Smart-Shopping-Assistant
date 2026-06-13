@@ -20,6 +20,8 @@ import {
 const Products = lazy(() => import("./components/Products"));
 const Categories = lazy(() => import("./components/Categories"));
 const Promotions = lazy(() => import("./components/Promotions"));
+const ProductDetail = lazy(() => import("./components/ProductDetail"));
+const Profile = lazy(() => import("./components/Profile"));
 
 function App() {
   const location = useLocation();
@@ -93,6 +95,32 @@ function App() {
                       <RequireAdmin>
                         <Promotions />
                       </RequireAdmin>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/shop/:productId"
+                  element={
+                    <ErrorBoundary
+                      FallbackComponent={RouteFallback}
+                      resetKeys={[location.pathname]}
+                    >
+                      <RequireAuth>
+                        <ProductDetail />
+                      </RequireAuth>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ErrorBoundary
+                      FallbackComponent={RouteFallback}
+                      resetKeys={[location.pathname]}
+                    >
+                      <RequireAuth>
+                        <Profile />
+                      </RequireAuth>
                     </ErrorBoundary>
                   }
                 />

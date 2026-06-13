@@ -22,6 +22,7 @@ export const cartApi = {
     await http.put(`/cart/items/${itemId}`, data);
   },
   removeItem: (itemId: number) => http.remove<void>(`/cart/items/${itemId}`),
+  clearCart: () => http.remove<void>("/cart"),
   analyze: async (): Promise<Analysis> => {
     return toAnalysis(await http.get<AnalysisModel>("/cart/analyze"));
   },

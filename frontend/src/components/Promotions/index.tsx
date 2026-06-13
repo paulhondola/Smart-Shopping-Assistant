@@ -1,8 +1,10 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { usePromotions, useDeletePromotion } from "@/hooks/usePromotions";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
+import { showToast } from "@/lib/toast";
 import {
   Alert,
   Box,
@@ -30,6 +32,7 @@ import PromotionFormDialog from "./PromotionFormDialog";
 import ConfirmDialog from "../common/ConfirmDialog";
 import PromotionFilterBar from "./PromotionFilterBar";
 import { usePromotionFilters } from "./hooks/usePromotionFilters";
+import EmptyState from "@/components/common/EmptyState";
 
 function Promotions() {
   const { data: promotions = [], isLoading, isError, error } = usePromotions();
@@ -66,7 +69,12 @@ function Promotions() {
   async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
-    await deletePromotion.mutateAsync(deleting.id);
+    try {
+      await deletePromotion.mutateAsync(deleting.id);
+      showToast("Promotion deleted", "success");
+    } catch {
+      showToast("Delete failed", "error");
+    }
   }
 
   return (
@@ -149,10 +157,13 @@ function Promotions() {
               ))}
               {filteredPromotions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    {promotions.length === 0
-                      ? "No promotions yet."
-                      : "No promotions match the current filters."}
+                  <TableCell colSpan={7} sx={{ border: "none" }}>
+                    <EmptyState
+                      icon={<LocalOfferIcon />}
+                      title={promotions.length === 0 ? "No promotions yet" : "No results"}
+                      description={promotions.length === 0 ? "Add your first promotion to get started." : "No promotions match the current filters."}
+                      action={promotions.length === 0 ? { label: "Add Promotion", onClick: handleAdd } : undefined}
+                    />
                   </TableCell>
                 </TableRow>
               )}

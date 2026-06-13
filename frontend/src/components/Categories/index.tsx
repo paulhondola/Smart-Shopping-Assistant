@@ -1,8 +1,10 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CategoryIcon from "@mui/icons-material/Category";
 import { useCategories, useDeleteCategory } from "@/hooks/useCategories";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
+import { showToast } from "@/lib/toast";
 import {
   Alert,
   Box,
@@ -25,6 +27,7 @@ import CategoryFormDialog from "@/components/Categories/CategoryFormDialog";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import CategoryFilterBar from "@/components/Categories/CategoryFilterBar";
 import { useCategoryFilters } from "./hooks/useCategoryFilters";
+import EmptyState from "@/components/common/EmptyState";
 
 function Categories() {
   const { data: categories = [], isLoading, isError, error } = useCategories();
@@ -61,7 +64,12 @@ function Categories() {
   async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
-    await deleteCategory.mutateAsync(deleting.id);
+    try {
+      await deleteCategory.mutateAsync(deleting.id);
+      showToast("Category deleted", "success");
+    } catch {
+      showToast("Delete failed", "error");
+    }
   }
 
   return (
@@ -128,10 +136,13 @@ function Categories() {
               ))}
               {filteredCategories.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    {categories.length === 0
-                      ? "No categories yet."
-                      : "No categories match the current filters."}
+                  <TableCell colSpan={3} sx={{ border: "none" }}>
+                    <EmptyState
+                      icon={<CategoryIcon />}
+                      title={categories.length === 0 ? "No categories yet" : "No results"}
+                      description={categories.length === 0 ? "Add your first category to get started." : "No categories match the current filters."}
+                      action={categories.length === 0 ? { label: "Add Category", onClick: handleAdd } : undefined}
+                    />
                   </TableCell>
                 </TableRow>
               )}

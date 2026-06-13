@@ -21,3 +21,7 @@ export interface AuthResponseModel {
   expiresAt: string;
   user: UserModel;
 }
+
+export interface UpdateProfileInput {
+  displayName: string;
+}
