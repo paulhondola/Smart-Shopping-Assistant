@@ -109,7 +109,7 @@ function NavBar() {
               Logout
             </Button>
             {!isAdmin && (
-              <IconButton color="inherit" onClick={openCart} sx={{ ml: 0.5 }}>
+              <IconButton color="inherit" onClick={openCart} sx={{ ml: 0.5 }} aria-label="Open cart">
                 <Badge badgeContent={cart?.itemCount ?? 0} color="primary" className={isPulsing ? "cart-badge-pulse" : undefined}>
                   <ShoppingCartIcon />
                 </Badge>

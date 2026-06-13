@@ -7,9 +7,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { showToast } from "@/lib/toast";
 import {
   Alert,
-  Box,
   Chip,
-  CircularProgress,
   Container,
   IconButton,
   Paper,
@@ -21,6 +19,7 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
+import { TableRowSkeleton } from "@/components/common/TableRowSkeleton";
 import { useState } from "react";
 import type { Promotion } from "../../shared/types/Promotion";
 import {
@@ -100,26 +99,23 @@ function Promotions() {
         />
       )}
 
-      {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Threshold</TableCell>
-                <TableCell>Reward</TableCell>
-                <TableCell>Reward Value</TableCell>
-                <TableCell>Active</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredPromotions.map((promotion) => (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Threshold</TableCell>
+              <TableCell>Reward</TableCell>
+              <TableCell>Reward Value</TableCell>
+              <TableCell>Active</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading
+              ? Array.from({ length: 5 }, (_, i) => <TableRowSkeleton key={i} columns={7} />)
+              : filteredPromotions.map((promotion) => (
                 <TableRow key={promotion.id} hover>
                   <TableCell>{promotion.name}</TableCell>
                   <TableCell>{promotionTypeLabel[promotion.type]}</TableCell>
@@ -155,7 +151,7 @@ function Promotions() {
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredPromotions.length === 0 && (
+              {!isLoading && filteredPromotions.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} sx={{ border: "none" }}>
                     <EmptyState
@@ -170,7 +166,6 @@ function Promotions() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
 
       {formOpen && (
         <PromotionFormDialog

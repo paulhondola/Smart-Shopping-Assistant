@@ -31,7 +31,7 @@ function CartDrawer() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
 
   return (
-    <Drawer anchor="right" open={open} onClose={closeCart}>
+    <Drawer anchor="right" open={open} onClose={closeCart} slotProps={{ paper: { sx: { bgcolor: "background.default" } } }} aria-label="Shopping cart">
       <Box
         sx={{
           width: 800,
@@ -50,7 +50,7 @@ function CartDrawer() {
           }}
         >
           <Typography variant="h6">Your Cart</Typography>
-          <IconButton onClick={closeCart}>
+          <IconButton onClick={closeCart} aria-label="Close cart">
             <CloseIcon />
           </IconButton>
         </Box>
@@ -84,6 +84,7 @@ function CartDrawer() {
                       size="small"
                       color="error"
                       onClick={() => removeProduct(item.id)}
+                      aria-label={`Remove ${item.productName}`}
                     >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
@@ -110,6 +111,7 @@ function CartDrawer() {
                       size="small"
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       disabled={item.quantity <= 1}
+                      aria-label="Decrease quantity"
                     >
                       <RemoveIcon fontSize="small" />
                     </IconButton>
@@ -121,6 +123,7 @@ function CartDrawer() {
                     <IconButton
                       size="small"
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      aria-label="Increase quantity"
                     >
                       <AddIcon fontSize="small" />
                     </IconButton>

@@ -11,8 +11,6 @@ import { useProductFilters } from "./hooks/useProductFilters";
 import {
   Alert,
   Avatar,
-  Box,
-  CircularProgress,
   Container,
   IconButton,
   Paper,
@@ -24,6 +22,7 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
+import { TableRowSkeleton } from "@/components/common/TableRowSkeleton";
 import { useState } from "react";
 import type { Product } from "../../shared/types/Product";
 import PageHeader from "../common/PageHeader";
@@ -93,25 +92,22 @@ function Products() {
         />
       )}
 
-      {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ width: 64 }}>Image</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>Categories</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredProducts.map((product) => (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ width: 64 }}>Image</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Categories</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading
+              ? Array.from({ length: 5 }, (_, i) => <TableRowSkeleton key={i} columns={6} />)
+              : filteredProducts.map((product) => (
                 <TableRow key={product.id} hover>
                   <TableCell>
                     <Avatar
@@ -154,7 +150,7 @@ function Products() {
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredProducts.length === 0 && (
+              {!isLoading && filteredProducts.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} sx={{ border: "none" }}>
                     <EmptyState
@@ -169,7 +165,6 @@ function Products() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
 
       {formOpen && (
         <ProductFormDialog

@@ -10,6 +10,7 @@ import type { Promotion } from "@/shared/types/Promotion";
 import {
   Alert,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -221,8 +222,13 @@ function PromotionFormDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave} disabled={saving}>
-          Save
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={saving}
+          startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
+        >
+          {saving ? "Saving…" : "Save"}
         </Button>
       </DialogActions>
     </Dialog>

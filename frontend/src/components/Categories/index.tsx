@@ -7,8 +7,6 @@ import { queryKeys } from "@/lib/queryKeys";
 import { showToast } from "@/lib/toast";
 import {
   Alert,
-  Box,
-  CircularProgress,
   Container,
   IconButton,
   Paper,
@@ -20,6 +18,7 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
+import { TableRowSkeleton } from "@/components/common/TableRowSkeleton";
 import { useState } from "react";
 import type { Category } from "@/shared/types/Category";
 import PageHeader from "@/components/common/PageHeader";
@@ -95,22 +94,19 @@ function Categories() {
         />
       )}
 
-      {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredCategories.map((category) => (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading
+              ? Array.from({ length: 5 }, (_, i) => <TableRowSkeleton key={i} columns={3} />)
+              : filteredCategories.map((category) => (
                 <TableRow key={category.id} hover>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>{category.description}</TableCell>
@@ -134,7 +130,7 @@ function Categories() {
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredCategories.length === 0 && (
+              {!isLoading && filteredCategories.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={3} sx={{ border: "none" }}>
                     <EmptyState
@@ -149,7 +145,6 @@ function Categories() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
 
       {formOpen && (
         <CategoryFormDialog

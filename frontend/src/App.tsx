@@ -11,7 +11,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import NotFound from "./components/NotFound";
 import AuthProvider from "./context/AuthContext/AuthProvider";
 import CartProvider from "./context/CartContext/CartProvider";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import {
   ErrorBoundary,
   RouteFallback,
@@ -25,6 +25,10 @@ const Profile = lazy(() => import("./components/Profile"));
 
 function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <AuthProvider>

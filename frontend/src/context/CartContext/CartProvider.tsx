@@ -7,6 +7,47 @@ import { useAuth } from "@/context/AuthContext/auth-context";
 import { queryKeys } from "@/lib/queryKeys";
 import { showToast } from "@/lib/toast";
 
+function ron(v: number) {
+  return `${v.toFixed(2)} RON`;
+}
+
+function applyQuantityUpdate(cart: Cart, itemId: number, quantity: number): Cart {
+  const items = cart.items.map((item) =>
+    item.id === itemId
+      ? { ...item, quantity, subtotal: item.unitPrice * quantity, subtotalLabel: ron(item.unitPrice * quantity) }
+      : item,
+  );
+  const subtotal = items.reduce((s, i) => s + i.subtotal, 0);
+  return {
+    ...cart,
+    items,
+    subtotal,
+    subtotalLabel: ron(subtotal),
+    total: subtotal - cart.totalDiscount,
+    totalLabel: ron(subtotal - cart.totalDiscount),
+    itemCount: items.reduce((s, i) => s + i.quantity, 0),
+  };
+}
+
+function applyRemoveItem(cart: Cart, itemId: number): Cart {
+  const items = cart.items.filter((item) => item.id !== itemId);
+  const subtotal = items.reduce((s, i) => s + i.subtotal, 0);
+  const promotions = items.length > 0 ? cart.appliedPromotions : [];
+  const totalDiscount = promotions.reduce((s, p) => s + p.discount, 0);
+  return {
+    ...cart,
+    items,
+    subtotal,
+    subtotalLabel: ron(subtotal),
+    appliedPromotions: promotions,
+    totalDiscount,
+    totalDiscountLabel: ron(totalDiscount),
+    total: subtotal - totalDiscount,
+    totalLabel: ron(subtotal - totalDiscount),
+    itemCount: items.reduce((s, i) => s + i.quantity, 0),
+  };
+}
+
 function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -40,27 +81,34 @@ function CartProvider({ children }: { children: ReactNode }) {
   });
 
   const updateQuantityMutation = useMutation({
-    mutationFn: ({
-      productId,
-      quantity,
-    }: {
-      productId: number;
-      quantity: number;
-    }) => cartApi.updateItem(productId, { quantity }),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: queryKeys.cart });
-      showToast("Quantity updated", "success");
+    mutationFn: ({ productId, quantity }: { productId: number; quantity: number }) =>
+      cartApi.updateItem(productId, { quantity }),
+    onMutate: async ({ productId, quantity }) => {
+      await qc.cancelQueries({ queryKey: queryKeys.cart });
+      const prev = qc.getQueryData<Cart | null>(queryKeys.cart);
+      if (prev) qc.setQueryData<Cart | null>(queryKeys.cart, applyQuantityUpdate(prev, productId, quantity));
+      return { prev };
     },
-    onError: () => showToast("Cart update failed", "error"),
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev !== undefined) qc.setQueryData(queryKeys.cart, ctx.prev);
+      showToast("Cart update failed", "error");
+    },
+    onSettled: () => void qc.invalidateQueries({ queryKey: queryKeys.cart }),
   });
 
   const removeProductMutation = useMutation({
     mutationFn: (productId: number) => cartApi.removeItem(productId),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: queryKeys.cart });
-      showToast("Item removed", "success");
+    onMutate: async (itemId) => {
+      await qc.cancelQueries({ queryKey: queryKeys.cart });
+      const prev = qc.getQueryData<Cart | null>(queryKeys.cart);
+      if (prev) qc.setQueryData<Cart | null>(queryKeys.cart, applyRemoveItem(prev, itemId));
+      return { prev };
     },
-    onError: () => showToast("Cart update failed", "error"),
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev !== undefined) qc.setQueryData(queryKeys.cart, ctx.prev);
+      showToast("Cart update failed", "error");
+    },
+    onSettled: () => void qc.invalidateQueries({ queryKey: queryKeys.cart }),
   });
 
   const clearCartMutation = useMutation({
