@@ -1,9 +1,7 @@
 import {
   Box,
-  Checkbox,
+  Chip,
   Divider,
-  FormControlLabel,
-  FormGroup,
   Slider,
   Typography,
 } from "@mui/material";
@@ -39,22 +37,22 @@ export function ShopSidebar({ categories, filters, priceMin, priceMax, onUpdate 
       <Typography variant="caption" color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
         Categories
       </Typography>
-      <FormGroup sx={{ mt: 0.5 }}>
-        {[...categories].sort().map((cat) => (
-          <FormControlLabel
-            key={cat}
-            label={<Typography variant="body2">{cat}</Typography>}
-            control={
-              <Checkbox
-                size="small"
-                checked={filters.selectedCategories.includes(cat)}
-                onChange={() => toggleCategory(cat)}
-              />
-            }
-            sx={{ mx: 0, my: -0.25 }}
-          />
-        ))}
-      </FormGroup>
+      <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+        {[...categories].sort().map((cat) => {
+          const selected = filters.selectedCategories.includes(cat);
+          return (
+            <Chip
+              key={cat}
+              label={cat}
+              size="small"
+              onClick={() => toggleCategory(cat)}
+              color={selected ? "primary" : "default"}
+              variant={selected ? "filled" : "outlined"}
+              sx={{ cursor: "pointer" }}
+            />
+          );
+        })}
+      </Box>
 
       <Divider sx={{ my: 2 }} />
 
