@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Divider,
@@ -72,61 +73,69 @@ function CartDrawer() {
                   disableGutters
                   sx={{ display: "block", py: 1.5 }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography>{item.productName}</Typography>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => removeProduct(item.id)}
-                      aria-label={`Remove ${item.productName}`}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                  {/* Unit price + item total on the same row */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "baseline",
-                    }}
-                  >
-                    <Typography variant="body2" color="text.secondary">
-                      {item.unitPriceLabel} × {item.quantity}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                      {item.subtotalLabel}
-                    </Typography>
-                  </Box>
+                  <Box sx={{ display: "flex", gap: 1.5 }}>
+                    <Avatar
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      variant="rounded"
+                      sx={{ width: 64, height: 64, flexShrink: 0 }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography noWrap>{item.productName}</Typography>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => removeProduct(item.id)}
+                          aria-label={`Remove ${item.productName}`}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                      {/* Unit price + item total */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          {item.unitPriceLabel} × {item.quantity}
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                          {item.subtotalLabel}
+                        </Typography>
+                      </Box>
 
-                  {/* Quantity controls */}
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
-                    <IconButton
-                      size="small"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      disabled={item.quantity <= 1}
-                      aria-label="Decrease quantity"
-                    >
-                      <RemoveIcon fontSize="small" />
-                    </IconButton>
-                    <Typography
-                      sx={{ mx: 1, minWidth: 24, textAlign: "center" }}
-                    >
-                      {item.quantity}
-                    </Typography>
-                    <IconButton
-                      size="small"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      aria-label="Increase quantity"
-                    >
-                      <AddIcon fontSize="small" />
-                    </IconButton>
+                      {/* Quantity controls */}
+                      <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
+                        <IconButton
+                          size="small"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          aria-label="Decrease quantity"
+                        >
+                          <RemoveIcon fontSize="small" />
+                        </IconButton>
+                        <Typography sx={{ mx: 1, minWidth: 24, textAlign: "center" }}>
+                          {item.quantity}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          aria-label="Increase quantity"
+                        >
+                          <AddIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
                   </Box>
                 </ListItem>
               ))}

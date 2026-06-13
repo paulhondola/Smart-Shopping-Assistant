@@ -230,6 +230,7 @@ public class CartService(
             Id = ci.Id,
             ProductId = ci.ProductId,
             ProductName = ci.Product.Name,
+            ImageUrl = ci.Product.ImageUrl,
             UnitPrice = ci.Product.Price,
             Quantity = ci.Quantity,
             Subtotal = ci.Product.Price * ci.Quantity,

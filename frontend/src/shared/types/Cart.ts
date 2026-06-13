@@ -8,6 +8,7 @@ export interface CartItem {
   id: number;
   productId: number;
   productName: string;
+  imageUrl?: string;
   unitPrice: number;
   unitPriceLabel: string;
   quantity: number;
@@ -40,6 +41,7 @@ export function toCartModel(dto: CartModel): Cart {
       id: item.id,
       productId: item.productId,
       productName: item.productName,
+      imageUrl: item.imageUrl,
       unitPrice: item.unitPrice,
       unitPriceLabel: money(item.unitPrice),
       quantity: item.quantity,

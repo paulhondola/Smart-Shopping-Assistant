@@ -57,6 +57,7 @@ public class JwtTokenIssuer(IOptions<JwtTokenIssuerOptions> options) : IJwtToken
                 Email = user.Email,
                 DisplayName = user.DisplayName,
                 Role = user.Role.ToString(),
+                AvatarUrl = user.AvatarUrl,
             },
         };
     }
