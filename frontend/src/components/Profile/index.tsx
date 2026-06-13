@@ -1,22 +1,44 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Avatar,
   Box,
   Button,
   Chip,
+  CircularProgress,
   Container,
+  IconButton,
   Paper,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useAuth } from "@/context/AuthContext/auth-context";
 import { showToast } from "@/lib/toast";
 
 function Profile() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, uploadAvatar } = useAuth();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.displayName ?? "");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      await uploadAvatar(file);
+      showToast("Avatar updated", "success");
+    } catch {
+      showToast("Upload failed", "error");
+    } finally {
+      setUploading(false);
+      // Reset so the same file can be re-selected
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <Container maxWidth="sm" sx={{ py: 6 }}>
@@ -33,17 +55,50 @@ function Profile() {
             mb: 4,
           }}
         >
-          <Avatar
-            sx={{
-              width: 80,
-              height: 80,
-              fontSize: 32,
-              bgcolor: "primary.main",
-              mb: 2,
-            }}
-          >
-            {user?.displayName?.charAt(0).toUpperCase()}
-          </Avatar>
+          <Box sx={{ position: "relative", width: 80, height: 80, mb: 2 }}>
+            <Avatar
+              src={user?.avatarUrl}
+              sx={{
+                width: 80,
+                height: 80,
+                fontSize: 32,
+                bgcolor: "primary.main",
+              }}
+            >
+              {user?.displayName?.charAt(0).toUpperCase()}
+            </Avatar>
+            <Tooltip title="Change photo">
+              <IconButton
+                size="small"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                aria-label="Upload avatar"
+                sx={{
+                  position: "absolute",
+                  bottom: -4,
+                  right: -4,
+                  bgcolor: "background.paper",
+                  border: "2px solid",
+                  borderColor: "divider",
+                  p: 0.5,
+                  "&:hover": { bgcolor: "action.hover" },
+                }}
+              >
+                {uploading ? (
+                  <CircularProgress size={14} />
+                ) : (
+                  <CameraAltIcon sx={{ fontSize: 14 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleAvatarChange}
+            />
+          </Box>
           <Chip
             label={user?.role}
             color={user?.role === "Admin" ? "error" : "default"}

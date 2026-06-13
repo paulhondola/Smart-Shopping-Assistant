@@ -1,5 +1,6 @@
 using Api.Auth;
 using Api.Options;
+using Microsoft.Extensions.FileProviders;
 using Data;
 using Data.Repositories;
 using Data.Repositories.Interfaces;
@@ -156,6 +157,14 @@ if (app.Environment.IsDevelopment())
 app.UseCors("FrontendOrigin");
 
 app.UseHttpsRedirection();
+
+var wwwrootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+Directory.CreateDirectory(Path.Combine(wwwrootPath, "avatars"));
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(wwwrootPath),
+    RequestPath = "",
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

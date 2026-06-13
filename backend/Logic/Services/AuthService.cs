@@ -56,6 +56,7 @@ public class AuthService(
             Email = user.Email,
             DisplayName = user.DisplayName,
             Role = user.Role.ToString(),
+            AvatarUrl = user.AvatarUrl,
         };
     }
 
@@ -74,6 +75,26 @@ public class AuthService(
             Email = user.Email,
             DisplayName = user.DisplayName,
             Role = user.Role.ToString(),
+            AvatarUrl = user.AvatarUrl,
+        };
+    }
+
+    public async Task<UserGetDto> UpdateAvatarAsync(string avatarUrl, CancellationToken ct = default)
+    {
+        var userId = currentUser.RequireUserId();
+        var user = await userRepository.FindByIdAsync(userId, ct)
+            ?? throw new InvalidOperationException("Authenticated user not found.");
+
+        user.AvatarUrl = avatarUrl;
+        await userRepository.UpdateAsync(user, ct);
+
+        return new UserGetDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            DisplayName = user.DisplayName,
+            Role = user.Role.ToString(),
+            AvatarUrl = user.AvatarUrl,
         };
     }
 }

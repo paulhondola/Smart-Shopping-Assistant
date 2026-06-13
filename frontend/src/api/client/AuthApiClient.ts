@@ -18,4 +18,10 @@ export const authApi = {
 
   updateProfile: (data: UpdateProfileInput) =>
     http.put<UserModel, UpdateProfileInput>("/auth/me", data),
+
+  uploadAvatar: (file: File) => {
+    const form = new FormData();
+    form.append("avatar", file);
+    return http.upload<UserModel>("/auth/me/avatar", form);
+  },
 };

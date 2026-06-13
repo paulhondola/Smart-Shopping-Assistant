@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
   AppBar,
+  Avatar,
   Box,
   Button,
   IconButton,
   Badge,
   Toolbar,
-  Typography,
+  Tooltip,
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/logo.png";
@@ -97,14 +98,20 @@ function NavBar() {
 
         {user ? (
           <>
-            <Typography
-              component={Link}
-              to="/profile"
-              variant="body2"
-              sx={{ mr: 1, color: "text.secondary", display: { xs: "none", sm: "block" }, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
-            >
-              {user.displayName}
-            </Typography>
+            <Tooltip title={user.displayName}>
+              <Box
+                component={Link}
+                to="/profile"
+                sx={{ display: "flex", alignItems: "center", mr: 1, flexShrink: 0 }}
+              >
+                <Avatar
+                  src={user.avatarUrl}
+                  sx={{ width: 32, height: 32, fontSize: 14, bgcolor: "primary.main" }}
+                >
+                  {user.displayName.charAt(0).toUpperCase()}
+                </Avatar>
+              </Box>
+            </Tooltip>
             <Button color="inherit" onClick={logout} size="small">
               Logout
             </Button>

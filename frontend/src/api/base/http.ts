@@ -60,4 +60,10 @@ export const http = {
     const response = await api.delete<T>(path);
     return response.data;
   },
+  upload: async <T>(path: string, formData: FormData): Promise<T> => {
+    const response = await api.post<T>(path, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  },
 };

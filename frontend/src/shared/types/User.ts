@@ -5,6 +5,7 @@ export interface User {
   email: string;
   displayName: string;
   role: "User" | "Admin";
+  avatarUrl?: string;
 }
 
 export const toUser = (dto: UserModel): User => ({
@@ -12,4 +13,5 @@ export const toUser = (dto: UserModel): User => ({
   email: dto.email,
   displayName: dto.displayName,
   role: dto.role as User["role"],
+  avatarUrl: dto.avatarUrl,
 });

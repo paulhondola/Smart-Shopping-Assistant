@@ -8,4 +8,5 @@ public interface IAuthService
     Task<AuthResponseDto> LoginAsync(LoginUserDto dto, CancellationToken ct = default);
     Task<UserGetDto> GetCurrentUserAsync(CancellationToken ct = default);
     Task<UserGetDto> UpdateProfileAsync(UpdateProfileDto dto, CancellationToken ct = default);
+    Task<UserGetDto> UpdateAvatarAsync(string avatarUrl, CancellationToken ct = default);
 }

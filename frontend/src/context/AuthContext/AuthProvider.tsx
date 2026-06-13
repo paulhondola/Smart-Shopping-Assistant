@@ -70,8 +70,13 @@ function AuthProvider({ children }: { children: ReactNode }) {
     setUser(toUser(dto));
   };
 
+  const uploadAvatar = async (file: File) => {
+    const dto = await authApi.uploadAvatar(file);
+    setUser(toUser(dto));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile, uploadAvatar }}>
       {children}
     </AuthContext.Provider>
   );

@@ -12,6 +12,7 @@ export interface AuthContextValue {
   ) => Promise<void>;
   logout: () => void;
   updateProfile: (displayName: string) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
