@@ -66,7 +66,7 @@ export function HeroSection() {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Button
               component={RouterLink}
-              to="/products"
+              to="/shop"
               variant="contained"
               size="large"
               sx={{
@@ -82,8 +82,8 @@ export function HeroSection() {
               Browse Products
             </Button>
             <Button
-              component={RouterLink}
-              to="/promotions"
+              component="a"
+              href="#deals-heading"
               variant="outlined"
               size="large"
               sx={{

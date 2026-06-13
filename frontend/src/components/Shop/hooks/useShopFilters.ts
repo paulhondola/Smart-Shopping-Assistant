@@ -10,16 +10,21 @@ export interface ShopFilters {
   sort: SortOption;
 }
 
-function buildDefaultFilters(products: Product[]): ShopFilters {
+function buildDefaultFilters(products: Product[], initialCategory?: string): ShopFilters {
   const prices = products.map((p) => p.price);
   const min = prices.length ? Math.floor(Math.min(...prices)) : 0;
   const max = prices.length ? Math.ceil(Math.max(...prices)) : 10000;
-  return { search: "", selectedCategories: [], priceRange: [min, max], sort: "price-asc" };
+  return {
+    search: "",
+    selectedCategories: initialCategory ? [initialCategory] : [],
+    priceRange: [min, max],
+    sort: "price-asc",
+  };
 }
 
-export function useShopFilters(products: Product[]) {
+export function useShopFilters(products: Product[], initialCategory?: string) {
   const [filters, setFilters] = useState<ShopFilters>(() =>
-    buildDefaultFilters(products)
+    buildDefaultFilters(products, initialCategory)
   );
 
   const priceMin = useMemo(

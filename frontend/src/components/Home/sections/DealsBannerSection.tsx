@@ -2,13 +2,15 @@ import { Box, Container, Skeleton, Chip } from '@mui/material';
 import { SectionHeading } from '../parts/SectionHeading';
 import { PromotionCard } from '../parts/PromotionCard';
 import type { Promotion } from '@/shared/types/Promotion';
+import type { Category } from '@/shared/types/Category';
 
 interface DealsBannerSectionProps {
   promotions: Promotion[];
+  categories: Category[];
   loading: boolean;
 }
 
-export function DealsBannerSection({ promotions, loading }: DealsBannerSectionProps) {
+export function DealsBannerSection({ promotions, categories, loading }: DealsBannerSectionProps) {
   if (!loading && promotions.length === 0) return null;
 
   return (
@@ -50,22 +52,27 @@ export function DealsBannerSection({ promotions, loading }: DealsBannerSectionPr
                   key={i}
                   variant="rectangular"
                   width={280}
-                  height={160}
+                  height={180}
                   sx={{ borderRadius: 2, flexShrink: 0 }}
                 />
               ))
-            : promotions.map((p) => (
-                <Box
-                  key={p.id}
-                  sx={{
-                    scrollSnapAlign: { xs: 'start', md: 'none' },
-                    flex: { xs: '0 0 280px', md: '1 1 300px' },
-                    maxWidth: { md: 360 },
-                  }}
-                >
-                  <PromotionCard promotion={p} />
-                </Box>
-              ))}
+            : promotions.map((p) => {
+                const categoryName = p.categoryId
+                  ? categories.find((c) => c.id === p.categoryId)?.name
+                  : undefined;
+                return (
+                  <Box
+                    key={p.id}
+                    sx={{
+                      scrollSnapAlign: { xs: 'start', md: 'none' },
+                      flex: { xs: '0 0 280px', md: '1 1 300px' },
+                      maxWidth: { md: 360 },
+                    }}
+                  >
+                    <PromotionCard promotion={p} categoryName={categoryName} />
+                  </Box>
+                );
+              })}
         </Box>
       </Container>
     </Box>

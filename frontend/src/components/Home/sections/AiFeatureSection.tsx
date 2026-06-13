@@ -28,7 +28,7 @@ export function AiFeatureSection() {
       sx={{
         py: { xs: 8, md: 14 },
         background: (t) =>
-          `radial-gradient(ellipse at 20% 50%, ${t.palette.primary.main}08 0%, transparent 60%), #181816`,
+          `radial-gradient(ellipse at 20% 50%, ${t.palette.primary.main}14 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, ${t.palette.primary.main}0a 0%, transparent 50%), #181816`,
       }}
     >
       <Container maxWidth="lg">

@@ -12,7 +12,7 @@ function Home() {
   const { data, loading, error } = useLandingData();
 
   return (
-    <Box>
+    <Box sx={{ background: (t) => `linear-gradient(160deg, ${t.palette.primary.main}0e 0%, transparent 30%, transparent 70%, ${t.palette.primary.main}0a 100%)` }}>
       {error && (
         <Container maxWidth="lg" sx={{ pt: 2 }}>
           <Alert severity="warning" variant="outlined">
@@ -25,7 +25,7 @@ function Home() {
       <StatsBar counts={data?.counts} loading={loading} />
       <FeaturedProductsSection products={data?.featuredProducts ?? []} loading={loading} />
       <CategoryGridSection categories={data?.categories ?? []} loading={loading} />
-      <DealsBannerSection promotions={data?.activePromotions ?? []} loading={loading} />
+      <DealsBannerSection promotions={data?.activePromotions ?? []} categories={data?.categories ?? []} loading={loading} />
       <AiFeatureSection />
       <FinalCtaSection />
     </Box>

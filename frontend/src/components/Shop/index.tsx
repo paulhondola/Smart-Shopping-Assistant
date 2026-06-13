@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import { productsApi } from "../../api/client/ProductApiClient";
 import { categoriesApi } from "../../api/client/CategoryApiClient";
 import type { Product } from "../../shared/types/Product";
@@ -33,6 +34,9 @@ function Shop() {
   const [error, setError] = useState("");
   const [addingId, setAddingId] = useState<number | null>(null);
 
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get("category") ?? undefined;
+
   const { addItem } = useCart();
   const {
     filters,
@@ -41,7 +45,7 @@ function Shop() {
     priceMax,
     updateFilter,
     clearFilters,
-  } = useShopFilters(products);
+  } = useShopFilters(products, initialCategory);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,6 +85,7 @@ function Shop() {
       : [...new Set(products.flatMap((p) => p.categories))];
 
   return (
+    <Box sx={{ minHeight: '100vh', background: (t) => `radial-gradient(ellipse at 85% 10%, ${t.palette.primary.main}0e 0%, transparent 50%), radial-gradient(ellipse at 15% 85%, ${t.palette.primary.main}0a 0%, transparent 45%)` }}>
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
@@ -176,6 +181,7 @@ function Shop() {
         </Box>
       )}
     </Container>
+    </Box>
   );
 }
 

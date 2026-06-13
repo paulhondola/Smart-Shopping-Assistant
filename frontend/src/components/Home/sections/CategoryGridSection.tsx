@@ -28,7 +28,7 @@ export function CategoryGridSection({ categories, loading }: CategoryGridSection
     <Box
       component="section"
       aria-labelledby="categories-heading"
-      sx={{ py: { xs: 8, md: 12 }, bgcolor: '#181816' }}
+      sx={{ py: { xs: 8, md: 12 }, background: (t) => `radial-gradient(ellipse at 85% 15%, ${t.palette.primary.main}12 0%, transparent 55%), #181816` }}
     >
       <Container maxWidth="xl">
         <SectionHeading id="categories-heading" eyebrow="Browse" title="Shop by Category" />

@@ -10,7 +10,7 @@ export function FinalCtaSection() {
         py: { xs: 10, md: 18 },
         textAlign: 'center',
         background: (t) =>
-          `linear-gradient(to bottom, ${t.palette.background.default}, #0e0e0c)`,
+          `radial-gradient(ellipse at 50% 0%, ${t.palette.primary.main}10 0%, transparent 60%), linear-gradient(to bottom, ${t.palette.background.default}, #0e0e0c)`,
       }}
     >
       <Container maxWidth="md">
@@ -34,7 +34,7 @@ export function FinalCtaSection() {
         </Typography>
         <Button
           component={RouterLink}
-          to="/products"
+          to="/shop"
           variant="contained"
           size="large"
           sx={{
@@ -52,8 +52,8 @@ export function FinalCtaSection() {
         </Button>
         <Box sx={{ mt: 3 }}>
           <Link
-            component={RouterLink}
-            to="/categories"
+            component="a"
+            href="#categories-heading"
             color="text.secondary"
             underline="hover"
             sx={{ fontSize: '0.9rem' }}

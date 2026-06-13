@@ -12,7 +12,7 @@ export function CategoryTile({ category, sx }: CategoryTileProps) {
   return (
     <ButtonBase
       component={RouterLink}
-      to="/products"
+      to={`/shop?category=${encodeURIComponent(category.name)}`}
       focusRipple
       sx={{
         display: 'block',
