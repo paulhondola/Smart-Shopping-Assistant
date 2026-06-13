@@ -1,7 +1,7 @@
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListOffIcon from "@mui/icons-material/FilterListOff";
-import type { CategoryFilters } from "../hooks/useCategoryFilters";
+import type { CategoryFilters } from "@/components/Categories/hooks/useCategoryFilters";
 
 interface CategoryFilterBarProps {
   filters: CategoryFilters;

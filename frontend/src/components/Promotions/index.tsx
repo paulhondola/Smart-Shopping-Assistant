@@ -1,6 +1,8 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { promotionsApi } from "@/api/client/PromotionsApiClient";
+import { usePromotions, useDeletePromotion } from "@/hooks/usePromotions";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import {
   Alert,
   Box,
@@ -17,9 +19,12 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Promotion } from "../../shared/types/Promotion";
-import { promotionTypeLabel, promotionRewardLabel } from "../../shared/types/Promotion";
+import {
+  promotionTypeLabel,
+  promotionRewardLabel,
+} from "../../shared/types/Promotion";
 import PageHeader from "../common/PageHeader";
 import PromotionFormDialog from "./PromotionFormDialog";
 import ConfirmDialog from "../common/ConfirmDialog";
@@ -27,27 +32,21 @@ import PromotionFilterBar from "./PromotionFilterBar";
 import { usePromotionFilters } from "./hooks/usePromotionFilters";
 
 function Promotions() {
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const { filters, filteredPromotions, activeFilterCount, updateFilter, clearFilters } =
-    usePromotionFilters(promotions);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: promotions = [], isLoading, isError, error } = usePromotions();
+  const deletePromotion = useDeletePromotion();
+  const qc = useQueryClient();
+
+  const {
+    filters,
+    filteredPromotions,
+    activeFilterCount,
+    updateFilter,
+    clearFilters,
+  } = usePromotionFilters(promotions);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Promotion | null>(null);
   const [deleting, setDeleting] = useState<Promotion | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  async function loadPromotions() {
-    try {
-      const data = await promotionsApi.getAll();
-      setPromotions(data);
-      setError("");
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function handleAdd() {
     setEditing(null);
@@ -67,17 +66,8 @@ function Promotions() {
   async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
-    try {
-      await promotionsApi.remove(deleting.id);
-      await loadPromotions();
-    } catch (err) {
-      setError((err as Error).message);
-    }
+    await deletePromotion.mutateAsync(deleting.id);
   }
-
-  useEffect(() => {
-    void loadPromotions();
-  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -87,13 +77,13 @@ function Promotions() {
         onAction={handleAdd}
       />
 
-      {error !== "" && (
+      {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {(error as Error).message}
         </Alert>
       )}
 
-      {!loading && (
+      {!isLoading && (
         <PromotionFilterBar
           filters={filters}
           activeFilterCount={activeFilterCount}
@@ -102,7 +92,7 @@ function Promotions() {
         />
       )}
 
-      {loading ? (
+      {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
         </Box>
@@ -126,7 +116,9 @@ function Promotions() {
                   <TableCell>{promotion.name}</TableCell>
                   <TableCell>{promotionTypeLabel[promotion.type]}</TableCell>
                   <TableCell>{promotion.threshold}</TableCell>
-                  <TableCell>{promotionRewardLabel[promotion.reward]}</TableCell>
+                  <TableCell>
+                    {promotionRewardLabel[promotion.reward]}
+                  </TableCell>
                   <TableCell>{promotion.rewardValue}</TableCell>
                   <TableCell>
                     <Chip
@@ -175,7 +167,7 @@ function Promotions() {
           onClose={() => setFormOpen(false)}
           onSaved={() => {
             setFormOpen(false);
-            void loadPromotions();
+            void qc.invalidateQueries({ queryKey: queryKeys.promotions });
           }}
         />
       )}

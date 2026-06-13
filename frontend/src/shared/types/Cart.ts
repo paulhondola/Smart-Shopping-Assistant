@@ -1,4 +1,4 @@
-import type { CartModel } from "../../api/models/CartModel";
+import type { CartModel } from "@/api/models/CartModel";
 
 function money(value: number): string {
   return `${value.toFixed(2)} RON`;

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Cart } from "../../shared/types/Cart";
+import type { Cart } from "@/shared/types/Cart";
 
 export interface CartContextValue {
   cart: Cart | null;

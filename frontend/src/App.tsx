@@ -1,21 +1,29 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import NavBar from "./components/NavBar";
 import Home from "./components/Home";
-import Products from "./components/Products";
-import Categories from "./components/Categories";
-import Promotions from "./components/Promotions";
 import CartDrawer from "./components/CartDrawer";
 import Shop from "./components/Shop";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import RequireAuth from "./components/common/RequireAuth";
 import RequireAdmin from "./components/common/RequireAdmin";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import NotFound from "./components/NotFound";
 import AuthProvider from "./context/AuthContext/AuthProvider";
 import CartProvider from "./context/CartContext/CartProvider";
+import { lazy, Suspense } from "react";
+import {
+  ErrorBoundary,
+  RouteFallback,
+} from "./components/common/ErrorBoundary";
+
+const Products = lazy(() => import("./components/Products"));
+const Categories = lazy(() => import("./components/Categories"));
+const Promotions = lazy(() => import("./components/Promotions"));
 
 function App() {
+  const location = useLocation();
+
   return (
     <AuthProvider>
       <CartProvider>
@@ -25,44 +33,72 @@ function App() {
           <NavBar />
           <CartDrawer />
           <Box component="main" sx={{ flex: 1 }}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route
-                path="/shop"
-                element={
-                  <RequireAuth>
-                    <Shop />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/products"
-                element={
-                  <RequireAdmin>
-                    <Products />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/categories"
-                element={
-                  <RequireAdmin>
-                    <Categories />
-                  </RequireAdmin>
-                }
-              />
-              <Route
-                path="/promotions"
-                element={
-                  <RequireAdmin>
-                    <Promotions />
-                  </RequireAdmin>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense
+              fallback={
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+                  <CircularProgress />
+                </Box>
+              }
+            >
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route
+                  path="/shop"
+                  element={
+                    <ErrorBoundary
+                      FallbackComponent={RouteFallback}
+                      resetKeys={[location.pathname]}
+                    >
+                      <RequireAuth>
+                        <Shop />
+                      </RequireAuth>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/products"
+                  element={
+                    <ErrorBoundary
+                      FallbackComponent={RouteFallback}
+                      resetKeys={[location.pathname]}
+                    >
+                      <RequireAdmin>
+                        <Products />
+                      </RequireAdmin>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/categories"
+                  element={
+                    <ErrorBoundary
+                      FallbackComponent={RouteFallback}
+                      resetKeys={[location.pathname]}
+                    >
+                      <RequireAdmin>
+                        <Categories />
+                      </RequireAdmin>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/promotions"
+                  element={
+                    <ErrorBoundary
+                      FallbackComponent={RouteFallback}
+                      resetKeys={[location.pathname]}
+                    >
+                      <RequireAdmin>
+                        <Promotions />
+                      </RequireAdmin>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </Box>
         </Box>
       </CartProvider>

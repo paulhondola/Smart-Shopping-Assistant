@@ -1,8 +1,8 @@
-import { Box, Container, Skeleton, Chip } from '@mui/material';
-import { SectionHeading } from '../parts/SectionHeading';
-import { PromotionCard } from '../parts/PromotionCard';
-import type { Promotion } from '@/shared/types/Promotion';
-import type { Category } from '@/shared/types/Category';
+import { Box, Container, Skeleton, Chip } from "@mui/material";
+import { SectionHeading } from "@/components/Home/parts/SectionHeading";
+import { PromotionCard } from "@/components/Home/parts/PromotionCard";
+import type { Promotion } from "@/shared/types/Promotion";
+import type { Category } from "@/shared/types/Category";
 
 interface DealsBannerSectionProps {
   promotions: Promotion[];
@@ -10,7 +10,11 @@ interface DealsBannerSectionProps {
   loading: boolean;
 }
 
-export function DealsBannerSection({ promotions, categories, loading }: DealsBannerSectionProps) {
+export function DealsBannerSection({
+  promotions,
+  categories,
+  loading,
+}: DealsBannerSectionProps) {
   if (!loading && promotions.length === 0) return null;
 
   return (
@@ -38,11 +42,11 @@ export function DealsBannerSection({ promotions, categories, loading }: DealsBan
 
         <Box
           sx={{
-            display: 'flex',
+            display: "flex",
             gap: 2,
-            overflowX: { xs: 'auto', md: 'visible' },
-            flexWrap: { xs: 'nowrap', md: 'wrap' },
-            scrollSnapType: { xs: 'x mandatory', md: 'none' },
+            overflowX: { xs: "auto", md: "visible" },
+            flexWrap: { xs: "nowrap", md: "wrap" },
+            scrollSnapType: { xs: "x mandatory", md: "none" },
             pb: { xs: 1, md: 0 },
           }}
         >
@@ -64,8 +68,8 @@ export function DealsBannerSection({ promotions, categories, loading }: DealsBan
                   <Box
                     key={p.id}
                     sx={{
-                      scrollSnapAlign: { xs: 'start', md: 'none' },
-                      flex: { xs: '0 0 280px', md: '1 1 300px' },
+                      scrollSnapAlign: { xs: "start", md: "none" },
+                      flex: { xs: "0 0 280px", md: "1 1 300px" },
                       maxWidth: { md: 360 },
                     }}
                   >

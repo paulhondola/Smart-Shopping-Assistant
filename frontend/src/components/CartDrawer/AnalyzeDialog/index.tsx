@@ -27,6 +27,7 @@ const loadingMessages = [
   "🔍 Checking promotions...",
   "✨ Finding the best deals...",
   "🛒 Composing suggestions...",
+  "📝 Finalizing your shopping list...",
 ];
 
 type Decision = "approved" | "declined";

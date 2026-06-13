@@ -1,4 +1,4 @@
-import type { AnalysisModel } from "../../api/models/AnalysisModel";
+import type { AnalysisModel } from "@/api/models/AnalysisModel";
 
 function money(value: number): string {
   return `${value.toFixed(2)} RON`;

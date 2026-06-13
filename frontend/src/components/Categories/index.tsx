@@ -1,6 +1,8 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { categoriesApi } from "@/api/client/CategoryApiClient";
+import { useCategories, useDeleteCategory } from "@/hooks/useCategories";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import {
   Alert,
   Box,
@@ -16,16 +18,19 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import type { Category } from "../../shared/types/Category";
-import PageHeader from "../common/PageHeader";
-import CategoryFormDialog from "./CategoryFormDialog";
-import ConfirmDialog from "../common/ConfirmDialog";
-import CategoryFilterBar from "./CategoryFilterBar";
+import { useState } from "react";
+import type { Category } from "@/shared/types/Category";
+import PageHeader from "@/components/common/PageHeader";
+import CategoryFormDialog from "@/components/Categories/CategoryFormDialog";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import CategoryFilterBar from "@/components/Categories/CategoryFilterBar";
 import { useCategoryFilters } from "./hooks/useCategoryFilters";
 
 function Categories() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data: categories = [], isLoading, isError, error } = useCategories();
+  const deleteCategory = useDeleteCategory();
+  const qc = useQueryClient();
+
   const {
     filters,
     filteredCategories,
@@ -33,23 +38,10 @@ function Categories() {
     updateFilter,
     clearFilters,
   } = useCategoryFilters(categories);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState<Category | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  function loadCategories() {
-    categoriesApi
-      .getAll()
-      .then((data) => {
-        setCategories(data);
-        setError("");
-      })
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
-  }
 
   function handleAdd() {
     setEditing(null);
@@ -69,17 +61,8 @@ function Categories() {
   async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
-    try {
-      await categoriesApi.remove(deleting.id);
-      loadCategories();
-    } catch (err) {
-      setError((err as Error).message);
-    }
+    await deleteCategory.mutateAsync(deleting.id);
   }
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -89,13 +72,13 @@ function Categories() {
         onAction={handleAdd}
       />
 
-      {error !== "" && (
+      {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {(error as Error).message}
         </Alert>
       )}
 
-      {!loading && (
+      {!isLoading && (
         <CategoryFilterBar
           filters={filters}
           activeFilterCount={activeFilterCount}
@@ -104,7 +87,7 @@ function Categories() {
         />
       )}
 
-      {loading ? (
+      {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
         </Box>
@@ -163,7 +146,7 @@ function Categories() {
           onClose={() => setFormOpen(false)}
           onSaved={() => {
             setFormOpen(false);
-            loadCategories();
+            void qc.invalidateQueries({ queryKey: queryKeys.categories });
           }}
         />
       )}

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { Category } from "../../../shared/types/Category";
+import type { Category } from "@/shared/types/Category";
 
 export interface CategoryFilters {
   searchText: string;

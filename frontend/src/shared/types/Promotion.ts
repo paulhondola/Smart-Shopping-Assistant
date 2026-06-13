@@ -2,7 +2,7 @@ import type {
   PromotionOutput,
   PromotionType,
   PromotionReward,
-} from "../../api/models/PromotionsModel";
+} from "@/api/models/PromotionsModel";
 
 export interface Promotion {
   id: number;

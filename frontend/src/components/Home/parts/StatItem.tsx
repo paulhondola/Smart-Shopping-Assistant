@@ -1,6 +1,6 @@
-import { Box, Typography } from '@mui/material';
-import { useRef, useState, useEffect } from 'react';
-import { useCountUp } from '../hooks/useCountUp';
+import { Box, Typography } from "@mui/material";
+import { useRef, useState, useEffect } from "react";
+import { useCountUp } from "@/components/Home/hooks/useCountUp";
 
 interface StatItemProps {
   value: number;
@@ -29,15 +29,19 @@ export function StatItem({ value, label }: StatItemProps) {
   }, []);
 
   return (
-    <Box ref={ref} sx={{ textAlign: 'center', py: 3 }}>
+    <Box ref={ref} sx={{ textAlign: "center", py: 3 }}>
       <Typography
         variant="h3"
         color="primary.main"
-        sx={{ fontFamily: 'Georgia, serif', fontWeight: 700 }}
+        sx={{ fontFamily: "Georgia, serif", fontWeight: 700 }}
       >
-        {value > 0 ? displayed : '—'}
+        {value > 0 ? displayed : "—"}
       </Typography>
-      <Typography variant="overline" color="text.secondary" sx={{ letterSpacing: '0.12em' }}>
+      <Typography
+        variant="overline"
+        color="text.secondary"
+        sx={{ letterSpacing: "0.12em" }}
+      >
         {label}
       </Typography>
     </Box>

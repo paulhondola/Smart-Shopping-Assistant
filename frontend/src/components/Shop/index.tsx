@@ -10,10 +10,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router";
-import { productsApi } from "../../api/client/ProductApiClient";
-import { categoriesApi } from "../../api/client/CategoryApiClient";
+import { useProducts } from "@/hooks/useProducts";
+import { useCategories } from "@/hooks/useCategories";
 import type { Product } from "../../shared/types/Product";
 import { useCart } from "@/context/CartContext/cart-context";
 import { useShopFilters, type SortOption } from "./hooks/useShopFilters";
@@ -28,10 +28,9 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 ];
 
 function Shop() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categoryNames, setCategoryNames] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: products = [], isLoading: productsLoading, isError, error } = useProducts();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const loading = productsLoading || categoriesLoading;
   const [addingId, setAddingId] = useState<number | null>(null);
 
   const [searchParams] = useSearchParams();
@@ -47,27 +46,11 @@ function Shop() {
     clearFilters,
   } = useShopFilters(products, initialCategory);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    Promise.all([productsApi.getAll(), categoriesApi.getAll()])
-      .then(([prods, cats]) => {
-        if (cancelled) return;
-        setProducts(prods);
-        setCategoryNames(cats.map((c) => c.name));
-        setError("");
-      })
-      .catch((err) => {
-        if (!cancelled) setError((err as Error).message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const categoryNames = categories.map((c) => c.name);
+  const availableCategories =
+    categoryNames.length > 0
+      ? categoryNames
+      : [...new Set(products.flatMap((p) => p.categories))];
 
   async function handleAddToCart(product: Product) {
     setAddingId(product.id);
@@ -78,109 +61,107 @@ function Shop() {
     }
   }
 
-  // Derive categories list: prefer API result, fall back to product categories field
-  const availableCategories =
-    categoryNames.length > 0
-      ? categoryNames
-      : [...new Set(products.flatMap((p) => p.categories))];
-
   return (
-    <Box sx={{ minHeight: '100vh', background: (t) => `radial-gradient(ellipse at 85% 10%, ${t.palette.primary.main}0e 0%, transparent 50%), radial-gradient(ellipse at 15% 85%, ${t.palette.primary.main}0a 0%, transparent 45%)` }}>
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
-          {error}
-        </Alert>
-      )}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: (t) =>
+          `radial-gradient(ellipse at 85% 10%, ${t.palette.primary.main}0e 0%, transparent 50%), radial-gradient(ellipse at 15% 85%, ${t.palette.primary.main}0a 0%, transparent 45%)`,
+      }}
+    >
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {(error as Error).message}
+          </Alert>
+        )}
 
-      {/* Header row: title + sort */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <Typography variant="h4">Shop</Typography>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Sort by</InputLabel>
-          <Select
-            label="Sort by"
-            value={filters.sort}
-            onChange={(e) => updateFilter("sort", e.target.value as SortOption)}
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      {/* Search bar */}
-      <TextField
-        label="Search products"
-        value={filters.search}
-        onChange={(e) => updateFilter("search", e.target.value)}
-        fullWidth
-        sx={{ mb: 3 }}
-        slotProps={{ htmlInput: { "aria-label": "Search products" } }}
-      />
-
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-          <CircularProgress />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h4">Shop</Typography>
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>Sort by</InputLabel>
+            <Select
+              label="Sort by"
+              value={filters.sort}
+              onChange={(e) =>
+                updateFilter("sort", e.target.value as SortOption)
+              }
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
-      ) : (
-        <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start" }}>
-          {/* Left sidebar */}
-          <ShopSidebar
-            categories={availableCategories}
-            filters={filters}
-            priceMin={priceMin}
-            priceMax={priceMax}
-            onUpdate={updateFilter}
-          />
 
-          {/* Product grid */}
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: "grid",
-              gap: 2,
-              alignContent: "start",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            }}
-          >
-            {filteredProducts.map((product) => (
-              <ShopProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={() => handleAddToCart(product)}
-                loading={addingId === product.id}
-              />
-            ))}
-            {filteredProducts.length === 0 && (
-              <Box sx={{ gridColumn: "1/-1", textAlign: "center", mt: 4 }}>
-                <Typography color="text.secondary">
-                  No products match your filters.{" "}
-                  <Typography
-                    component="span"
-                    color="primary"
-                    sx={{ cursor: "pointer", textDecoration: "underline" }}
-                    onClick={clearFilters}
-                  >
-                    Clear filters
-                  </Typography>
-                </Typography>
-              </Box>
-            )}
+        <TextField
+          label="Search products"
+          value={filters.search}
+          onChange={(e) => updateFilter("search", e.target.value)}
+          fullWidth
+          sx={{ mb: 3 }}
+          slotProps={{ htmlInput: { "aria-label": "Search products" } }}
+        />
+
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+            <CircularProgress />
           </Box>
-        </Box>
-      )}
-    </Container>
+        ) : (
+          <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start" }}>
+            <ShopSidebar
+              categories={availableCategories}
+              filters={filters}
+              priceMin={priceMin}
+              priceMax={priceMax}
+              onUpdate={updateFilter}
+            />
+
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: "grid",
+                gap: 2,
+                alignContent: "start",
+                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              }}
+            >
+              {filteredProducts.map((product) => (
+                <ShopProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={() => handleAddToCart(product)}
+                  loading={addingId === product.id}
+                />
+              ))}
+              {filteredProducts.length === 0 && (
+                <Box sx={{ gridColumn: "1/-1", textAlign: "center", mt: 4 }}>
+                  <Typography color="text.secondary">
+                    No products match your filters.{" "}
+                    <Typography
+                      component="span"
+                      color="primary"
+                      sx={{ cursor: "pointer", textDecoration: "underline" }}
+                      onClick={clearFilters}
+                    >
+                      Clear filters
+                    </Typography>
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
+        )}
+      </Container>
     </Box>
   );
 }

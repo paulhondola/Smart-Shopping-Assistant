@@ -12,10 +12,11 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { useCart } from "../../context/CartContext/cart-context";
+import { useCart } from "@/context/CartContext/cart-context";
 import { useState } from "react";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AnalyzeDialog from "./AnalyzeDialog";
+
 function CartDrawer() {
   const { cart, open, closeCart, updateQuantity, removeProduct } = useCart();
 

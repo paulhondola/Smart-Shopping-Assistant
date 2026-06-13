@@ -1,4 +1,4 @@
-import type { CategoryOutput } from "../../api/models/CategoryModel";
+import type { CategoryOutput } from "@/api/models/CategoryModel";
 
 export interface Category {
   id: number;

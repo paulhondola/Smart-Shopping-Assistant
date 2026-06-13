@@ -1,7 +1,9 @@
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { productsApi } from "@/api/client/ProductApiClient";
+import { useProducts, useDeleteProduct } from "@/hooks/useProducts";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import ProductFilterBar from "./ProductFilterBar";
 import { useProductFilters } from "./hooks/useProductFilters";
 import {
@@ -20,34 +22,23 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Product } from "../../shared/types/Product";
 import PageHeader from "../common/PageHeader";
 import ProductFormDialog from "./ProductsFormDialog";
 import ConfirmDialog from "../common/ConfirmDialog";
 
 function Products() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { data: products = [], isLoading, isError, error } = useProducts();
+  const deleteProduct = useDeleteProduct();
+  const qc = useQueryClient();
+
   const { filters, filteredProducts, activeFilterCount, updateFilter, clearFilters } =
     useProductFilters(products);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState<Product | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  async function loadProducts() {
-    try {
-      const data = await productsApi.getAll();
-      setProducts(data);
-      setError("");
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function handleAdd() {
     setEditing(null);
@@ -67,17 +58,8 @@ function Products() {
   async function handleDeleteConfirm() {
     if (deleting === null) return;
     setConfirmOpen(false);
-    try {
-      await productsApi.remove(deleting.id);
-      await loadProducts();
-    } catch (err) {
-      setError((err as Error).message);
-    }
+    await deleteProduct.mutateAsync(deleting.id);
   }
-
-  useEffect(() => {
-    void loadProducts();
-  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -87,13 +69,13 @@ function Products() {
         onAction={handleAdd}
       />
 
-      {error !== "" && (
+      {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {(error as Error).message}
         </Alert>
       )}
 
-      {!loading && (
+      {!isLoading && (
         <ProductFilterBar
           products={products}
           filters={filters}
@@ -103,7 +85,7 @@ function Products() {
         />
       )}
 
-      {loading ? (
+      {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress />
         </Box>
@@ -184,7 +166,7 @@ function Products() {
           onClose={() => setFormOpen(false)}
           onSaved={() => {
             setFormOpen(false);
-            void loadProducts();
+            void qc.invalidateQueries({ queryKey: queryKeys.products });
           }}
         />
       )}

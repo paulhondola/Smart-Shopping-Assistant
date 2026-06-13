@@ -1,4 +1,4 @@
-import type { ProductOutput } from "../../api/models/ProductModel";
+import type { ProductOutput } from "@/api/models/ProductModel";
 
 export interface Product {
   id: number;
