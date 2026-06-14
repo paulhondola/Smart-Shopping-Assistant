@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Typography, Button, Paper } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import { Link as RouterLink } from "react-router";
+import { useCart } from "@/context/CartContext/cart-context";
 
 const mockOutput = [
   "> Analyzing cart (3 items)...",
@@ -21,6 +21,13 @@ const lineColor = (line: string) => {
 };
 
 export function AiFeatureSection() {
+  const { openCart, openAnalyze } = useCart();
+
+  function handleAnalyzeClick() {
+    openCart();
+    openAnalyze();
+  }
+
   return (
     <Box
       component="section"
@@ -103,11 +110,10 @@ export function AiFeatureSection() {
               automatically.
             </Typography>
             <Button
-              component={RouterLink}
-              to="/cart"
               variant="contained"
               size="large"
               startIcon={<AutoAwesomeIcon />}
+              onClick={handleAnalyzeClick}
               sx={{
                 px: 4,
                 py: 1.5,

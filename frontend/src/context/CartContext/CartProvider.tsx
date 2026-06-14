@@ -51,6 +51,7 @@ function applyRemoveItem(cart: Cart, itemId: number): Cart {
 function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [analyzeOpen, setAnalyzeOpen] = useState(false);
   const qc = useQueryClient();
 
   const { data: cart = null } = useQuery<Cart | null>({
@@ -127,6 +128,9 @@ function CartProvider({ children }: { children: ReactNode }) {
         open,
         openCart: () => setOpen(true),
         closeCart: () => setOpen(false),
+        analyzeOpen,
+        openAnalyze: () => setAnalyzeOpen(true),
+        closeAnalyze: () => setAnalyzeOpen(false),
         addItem: (productId, quantity) =>
           addItemMutation.mutateAsync({ productId, quantity }),
         updateQuantity: (productId, quantity) =>

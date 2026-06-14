@@ -23,12 +23,11 @@ import ConfirmDialog from "@/components/common/ConfirmDialog";
 import EmptyState from "@/components/common/EmptyState";
 
 function CartDrawer() {
-  const { cart, open, closeCart, updateQuantity, removeProduct, clearCart } = useCart();
+  const { cart, open, closeCart, analyzeOpen, openAnalyze, closeAnalyze, updateQuantity, removeProduct, clearCart } = useCart();
   const navigate = useNavigate();
 
   const isEmpty = cart === null || cart.items.length === 0;
 
-  const [analyzeOpen, setAnalyzeOpen] = useState(false);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
 
   return (
@@ -243,15 +242,12 @@ function CartDrawer() {
                 fullWidth
                 variant="outlined"
                 startIcon={<AutoAwesomeIcon />}
-                onClick={() => setAnalyzeOpen(true)}
+                onClick={openAnalyze}
                 sx={{ mt: 2 }}
               >
                 AI Analyze
               </Button>
             </Box>
-            {analyzeOpen && (
-              <AnalyzeDialog onClose={() => setAnalyzeOpen(false)} />
-            )}
             <ConfirmDialog
               open={confirmClearOpen}
               title="Clear cart?"
@@ -266,6 +262,7 @@ function CartDrawer() {
           </>
         )}
       </Box>
+      {analyzeOpen && <AnalyzeDialog onClose={closeAnalyze} />}
     </Drawer>
   );
 }

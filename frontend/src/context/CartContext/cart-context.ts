@@ -6,6 +6,9 @@ export interface CartContextValue {
   open: boolean;
   openCart: () => void;
   closeCart: () => void;
+  analyzeOpen: boolean;
+  openAnalyze: () => void;
+  closeAnalyze: () => void;
   addItem: (productId: number, quantity: number) => Promise<void>;
   updateQuantity: (productId: number, quantity: number) => Promise<void>;
   removeProduct: (productId: number) => Promise<void>;
